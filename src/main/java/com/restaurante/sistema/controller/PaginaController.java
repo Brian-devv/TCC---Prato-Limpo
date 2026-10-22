@@ -1,5 +1,6 @@
 package com.restaurante.sistema.controller;
 
+import jakarta.servlet.http.HttpSession;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 
@@ -10,6 +11,32 @@ import org.springframework.web.bind.annotation.GetMapping;
  */
 @Controller
 public class PaginaController {
+
+    /**
+     * Rota raiz: para onde o clique na marca (logo) leva.
+     *
+     * Não é uma página em si — é um "despachante" que decide o
+     * destino certo com base em quem está acessando:
+     *   - Sem sessão válida  -> tela de login (/entrar)
+     *   - Administrador logado -> painel administrativo
+     *   - Qualquer outro usuário logado -> painel comum
+     *
+     * Assim, clicar na marca nunca "desloga" ninguém nem pede login
+     * de novo para quem já está autenticado — só leva para a home
+     * de cada tipo de usuário.
+     */
+    @GetMapping("/")
+    public String raiz(HttpSession sessao) {
+        Object tipoPerfil = sessao.getAttribute("tipoPerfil");
+
+        if (tipoPerfil == null) {
+            return "redirect:/entrar";
+        }
+        if ("ADMINISTRADOR".equals(tipoPerfil)) {
+            return "redirect:/administrador/painel";
+        }
+        return "redirect:/painel";
+    }
 
     @GetMapping("/cadastro")
     public String paginaCadastro() {

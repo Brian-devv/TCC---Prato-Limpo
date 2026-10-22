@@ -5,7 +5,7 @@
  */
 
 // Guarda o id do administrador logado (usado para não deixar a
-// tabela oferecer "Excluir" na própria linha dele).
+// tabela oferecer "Editar"/switch de status na própria linha dele).
 let idAdministradorLogado = null;
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -79,7 +79,10 @@ function realizarLogout() {
 }
 
 /* ============================================================
- * CAIXA 1 — LISTAGEM DE USUÁRIOS (com botão Excluir)
+ * CAIXA 1 — LISTAGEM DE USUÁRIOS
+ * Cada linha tem: nome, e-mail, tipo, um switch de status
+ * (ativo/bloqueado) e um botão "Editar" que transforma a própria
+ * linha num formulário rápido de nome/e-mail.
  * ============================================================ */
 function carregarListaDeUsuarios() {
   document.querySelector("[data-elemento='tabela-usuarios']").hidden = true;
@@ -92,7 +95,6 @@ function carregarListaDeUsuarios() {
         return null;
       }
       if (resposta.status === 403) {
-        // Sessão válida, mas não é de administrador: manda para o painel comum.
         window.location.href = "/painel";
         return null;
       }
@@ -112,45 +114,70 @@ function carregarListaDeUsuarios() {
     });
 }
 
-/** Monta as linhas da tabela a partir da lista de usuários vinda da API. */
+/** Monta a tabela inteira a partir da lista de usuários vinda da API. */
 function renderizarTabelaUsuarios(usuarios) {
   const corpoTabela = document.querySelector("[data-elemento='corpo-tabela-usuarios']");
   corpoTabela.innerHTML = ""; // limpa antes de preencher, evita duplicar linhas em recarregamentos
 
   usuarios.forEach((usuario) => {
     const linha = document.createElement("tr");
-    const classeSelo = usuario.status === "ATIVO" ? "selo-status--ativo" : "selo-status--inativo";
-
-    // A própria linha do administrador logado não recebe botão de
-    // excluir (o backend também bloqueia isso, mas escondê-lo aqui
-    // evita que a pessoa clique e receba um erro sem necessidade).
-    const podeExcluir = usuario.id !== idAdministradorLogado;
-
-    linha.innerHTML = `
-      <td>${escaparHtml(usuario.nome)}</td>
-      <td>${escaparHtml(usuario.email)}</td>
-      <td>${escaparHtml(formatarTipoPerfil(usuario.tipoPerfil))}</td>
-      <td><span class="selo-status ${classeSelo}">${escaparHtml(usuario.status)}</span></td>
-      <td>
-        ${podeExcluir
-          ? `<button type="button" class="botao-tabela botao-tabela--perigo" data-acao="excluir-usuario" data-id="${usuario.id}">Excluir</button>`
-          : `<span class="texto-suave-tabela">—</span>`}
-      </td>
-    `;
+    preencherLinhaModoVisualizacao(linha, usuario);
     corpoTabela.appendChild(linha);
-  });
-
-  // Liga o evento de excluir em cada botão recém-criado
-  corpoTabela.querySelectorAll("[data-acao='excluir-usuario']").forEach((botao) => {
-    botao.addEventListener("click", () => confirmarExclusaoDeUsuario(botao.dataset.id, botao));
   });
 
   document.querySelector("[data-elemento='carregando-usuarios']").hidden = true;
   document.querySelector("[data-elemento='tabela-usuarios']").hidden = false;
 }
 
+/**
+ * Preenche uma <tr> no modo normal (não-edição): nome, e-mail, tipo,
+ * switch de status e botão "Editar". A própria linha do administrador
+ * logado não recebe nem o switch nem o botão de editar — ele gerencia
+ * os próprios dados em /perfil, não por aqui.
+ */
+function preencherLinhaModoVisualizacao(linha, usuario) {
+  const podeGerenciar = usuario.id !== idAdministradorLogado;
+  const estaAtivo = usuario.status === "ATIVO";
+
+  linha.innerHTML = `
+    <td>${escaparHtml(usuario.nome)}</td>
+    <td>${escaparHtml(usuario.email)}</td>
+    <td>${escaparHtml(formatarTipoPerfil(usuario.tipoPerfil))}</td>
+    <td>
+      ${podeGerenciar
+        ? `<label class="interruptor" title="Clique para ativar ou bloquear este usuário">
+             <input type="checkbox" data-acao="alternar-status" ${estaAtivo ? "checked" : ""} />
+             <span class="interruptor__trilho"></span>
+           </label>
+           <span class="interruptor__rotulo">${estaAtivo ? "Ativo" : "Bloqueado"}</span>`
+        : `<span class="texto-suave-tabela">—</span>`}
+    </td>
+    <td>
+      ${podeGerenciar
+        ? `<button type="button" class="botao-tabela" data-acao="editar-usuario">Editar</button>`
+        : `<span class="texto-suave-tabela">—</span>`}
+    </td>
+  `;
+
+  if (podeGerenciar) {
+    linha.querySelector("[data-acao='alternar-status']")
+      .addEventListener("change", () => alternarStatus(usuario, linha));
+    linha.querySelector("[data-acao='editar-usuario']")
+      .addEventListener("click", () => entrarModoEdicaoLinha(linha, usuario));
+  }
+}
+
 function formatarTipoPerfil(tipoPerfil) {
-  const rotulos = { USUARIO: "Usuário comum", FUNCIONARIO: "Funcionário", ADMINISTRADOR: "Administrador" };
+  const rotulos = {
+    USUARIO: "Usuário comum",
+    FUNCIONARIO: "Funcionário",
+    ADMINISTRADOR: "Administrador",
+    GESTOR: "Gestor",
+    PACIENTE: "Paciente",
+    ALUNO: "Aluno",
+    ESTAGIARIO: "Estagiário",
+    NUTRICIONISTA: "Nutricionista",
+  };
   return rotulos[tipoPerfil] || tipoPerfil;
 }
 
@@ -161,29 +188,99 @@ function escaparHtml(texto) {
   return div.innerHTML;
 }
 
-function confirmarExclusaoDeUsuario(idUsuario, botao) {
-  const confirmou = window.confirm("Tem certeza que deseja excluir este usuário? Essa ação não pode ser desfeita.");
-  if (!confirmou) return;
+/** Mesma ideia de escaparHtml, mas segura para uso dentro de atributos value="...". */
+function escaparAtributo(texto) {
+  return (texto ?? "")
+    .replace(/&/g, "&amp;")
+    .replace(/"/g, "&quot;")
+    .replace(/</g, "&lt;");
+}
 
-  botao.disabled = true;
-  botao.textContent = "Excluindo...";
-
-  fetch(`/api/admin/usuarios/${idUsuario}`, { method: "DELETE" })
+/* ============================================================
+ * SWITCH DE STATUS (ativar / bloquear)
+ * ============================================================ */
+function alternarStatus(usuario, linha) {
+  fetch(`/api/admin/usuarios/${usuario.id}/status`, { method: "PATCH" })
     .then(async (resposta) => {
       const corpo = await resposta.json();
       if (!resposta.ok || !corpo.sucesso) {
-        throw new Error(corpo.mensagem || "Não foi possível excluir o usuário.");
+        throw new Error(corpo.mensagem || "Não foi possível atualizar o status.");
       }
       return corpo;
     })
     .then((corpo) => {
       mostrarAlerta(corpo.mensagem, "sucesso");
-      carregarListaDeUsuarios(); // recarrega a tabela sem o usuário excluído
+      // Atualiza a linha com o novo status vindo da API, sem precisar
+      // recarregar a tabela inteira.
+      preencherLinhaModoVisualizacao(linha, corpo.dados);
     })
     .catch((erro) => {
       mostrarAlerta(erro.message, "erro");
-      botao.disabled = false;
-      botao.textContent = "Excluir";
+      carregarListaDeUsuarios(); // recarrega para desfazer o clique visualmente, se der erro
+    });
+}
+
+/* ============================================================
+ * EDIÇÃO EM LINHA (botão "Editar")
+ * Transforma a própria <tr> num mini-formulário de nome/e-mail,
+ * sem precisar de um modal ou de sair da página.
+ * ============================================================ */
+function entrarModoEdicaoLinha(linha, usuario) {
+  linha.innerHTML = `
+    <td><input type="text" class="entrada-tabela" data-campo="nome" value="${escaparAtributo(usuario.nome)}" /></td>
+    <td><input type="email" class="entrada-tabela" data-campo="email" value="${escaparAtributo(usuario.email)}" /></td>
+    <td>${escaparHtml(formatarTipoPerfil(usuario.tipoPerfil))}</td>
+    <td><span class="texto-suave-tabela">—</span></td>
+    <td>
+      <button type="button" class="botao-tabela botao-tabela--sucesso" data-acao="salvar-edicao">Salvar</button>
+      <button type="button" class="botao-tabela" data-acao="cancelar-edicao-linha">Cancelar</button>
+    </td>
+  `;
+
+  linha.querySelector("[data-acao='cancelar-edicao-linha']")
+    .addEventListener("click", () => preencherLinhaModoVisualizacao(linha, usuario));
+
+  linha.querySelector("[data-acao='salvar-edicao']")
+    .addEventListener("click", () => salvarEdicaoLinha(linha, usuario));
+}
+
+function salvarEdicaoLinha(linha, usuario) {
+  const nome = linha.querySelector("[data-campo='nome']").value.trim();
+  const email = linha.querySelector("[data-campo='email']").value.trim();
+  const botaoSalvar = linha.querySelector("[data-acao='salvar-edicao']");
+
+  if (!nome) {
+    mostrarAlerta("Informe o nome.", "erro");
+    return;
+  }
+  if (!email || !validarEmail(email)) {
+    mostrarAlerta("Informe um e-mail válido.", "erro");
+    return;
+  }
+
+  botaoSalvar.disabled = true;
+  botaoSalvar.textContent = "Salvando...";
+
+  fetch(`/api/admin/usuarios/${usuario.id}`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ nome, email }),
+  })
+    .then(async (resposta) => {
+      const corpo = await resposta.json();
+      if (!resposta.ok || !corpo.sucesso) {
+        throw new Error(corpo.mensagem || "Não foi possível salvar as alterações.");
+      }
+      return corpo;
+    })
+    .then((corpo) => {
+      mostrarAlerta(corpo.mensagem, "sucesso");
+      carregarListaDeUsuarios(); // recarrega a tabela com os dados já atualizados
+    })
+    .catch((erro) => {
+      mostrarAlerta(erro.message, "erro");
+      botaoSalvar.disabled = false;
+      botaoSalvar.textContent = "Salvar";
     });
 }
 
@@ -198,10 +295,13 @@ function inicializarFormularioCadastrarFuncionario() {
   inicializarAlternadoresSenha();
   inicializarMedidorForcaSenha("funcionario-senha");
   inicializarMascaraCPF("funcionario-cpf");
+  inicializarSeletorTipoColaborador();
 
   formulario.addEventListener("submit", (evento) => {
     evento.preventDefault();
     esconderAlerta();
+
+    const tipoColaborador = document.querySelector('input[name="tipoColaborador"]:checked').value;
 
     const nome = document.getElementById("funcionario-nome");
     const email = document.getElementById("funcionario-email");
@@ -250,17 +350,26 @@ function inicializarFormularioCadastrarFuncionario() {
       definirErroCampo("funcionario-data-nascimento", null);
     }
 
-    if (!cargo.value.trim()) {
-      definirErroCampo("funcionario-cargo", "Informe o cargo.");
-      valido = false;
-    } else {
-      definirErroCampo("funcionario-cargo", null);
-    }
+    // Cargo/Setor só são obrigatórios quando o tipo escolhido é FUNCIONARIO
+    // (um Gestor não tem esses campos no diagrama).
+    if (tipoColaborador === "FUNCIONARIO") {
+      if (!cargo.value) {
+        definirErroCampo("funcionario-cargo", "Selecione o cargo.");
+        valido = false;
+      } else {
+        definirErroCampo("funcionario-cargo", null);
+      }
 
-    if (!setor.value.trim()) {
-      definirErroCampo("funcionario-setor", "Informe o setor.");
-      valido = false;
+      if (!setor.value) {
+        definirErroCampo("funcionario-setor", "Selecione o setor.");
+        valido = false;
+      } else {
+        definirErroCampo("funcionario-setor", null);
+      }
     } else {
+      // Limpa qualquer erro que tenha ficado de uma tentativa anterior
+      // como Funcionário, já que esses campos não se aplicam ao Gestor.
+      definirErroCampo("funcionario-cargo", null);
       definirErroCampo("funcionario-setor", null);
     }
 
@@ -293,7 +402,7 @@ function inicializarFormularioCadastrarFuncionario() {
     botaoSalvar.disabled = true;
     botaoSalvar.textContent = "Cadastrando...";
 
-    fetch("/api/admin/funcionarios", {
+    fetch("/api/admin/colaboradores", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -301,8 +410,11 @@ function inicializarFormularioCadastrarFuncionario() {
         email: email.value.trim(),
         cpf: cpf.value.replace(/\D/g, ""),
         dataNascimento: dataNascimento.value,
-        cargo: cargo.value.trim(),
-        setor: setor.value.trim(),
+        tipoConta: tipoColaborador,
+        // Cargo/setor só fazem sentido para Funcionário; para Gestor,
+        // mandamos vazio mesmo (o backend ignora esses campos nesse caso).
+        cargo: tipoColaborador === "FUNCIONARIO" ? cargo.value : "",
+        setor: tipoColaborador === "FUNCIONARIO" ? setor.value : "",
         registroProfissional: registroProfissional.value.trim(),
         senha: senha.value,
         confirmarSenha: confirmarSenha.value,
@@ -311,24 +423,42 @@ function inicializarFormularioCadastrarFuncionario() {
       .then(async (resposta) => {
         const corpo = await resposta.json();
         if (!resposta.ok || !corpo.sucesso) {
-          throw new Error(corpo.mensagem || "Não foi possível cadastrar o funcionário.");
+          throw new Error(corpo.mensagem || "Não foi possível concluir o cadastro.");
         }
         return corpo;
       })
       .then((corpo) => {
+        // mostrarAlerta (utilitarios.js) já rola a tela até a mensagem,
+        // então ela aparece mesmo com o formulário lá embaixo da página.
         mostrarAlerta(corpo.mensagem, "sucesso");
         formulario.reset();
-        // reseta o medidor de força visualmente, já que o reset() não faz isso sozinho
         document.querySelectorAll("[data-barra]").forEach((barra) => {
           barra.style.background = "var(--cor-borda)";
         });
         document.querySelector("[data-rotulo-forca]").textContent = "Digite uma senha";
-        carregarListaDeUsuarios(); // mostra o funcionário recém-criado na caixa de cima
+        // Volta a exibir o bloco de Funcionário (opção padrão após o reset)
+        document.querySelector('[data-campos-para="FUNCIONARIO"]').hidden = false;
+        carregarListaDeUsuarios(); // mostra o colaborador recém-criado na caixa de cima
       })
       .catch((erro) => mostrarAlerta(erro.message, "erro"))
       .finally(() => {
         botaoSalvar.disabled = false;
-        botaoSalvar.textContent = "Cadastrar funcionário";
+        botaoSalvar.textContent = "Cadastrar";
       });
+  });
+}
+
+/**
+ * Ao trocar entre Funcionário/Gestor, mostra ou esconde o bloco de
+ * Cargo/Setor (só existe para Funcionário no diagrama).
+ */
+function inicializarSeletorTipoColaborador() {
+  const opcoes = document.querySelectorAll('input[name="tipoColaborador"]');
+  const blocoCargoSetor = document.querySelector('[data-campos-para="FUNCIONARIO"]');
+
+  opcoes.forEach((opcao) => {
+    opcao.addEventListener("change", () => {
+      blocoCargoSetor.hidden = opcao.value !== "FUNCIONARIO";
+    });
   });
 }

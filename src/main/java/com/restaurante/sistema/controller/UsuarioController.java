@@ -8,6 +8,7 @@ import com.restaurante.sistema.exception.AutenticacaoNecessariaException;
 import com.restaurante.sistema.service.UsuarioService;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,13 +22,10 @@ import org.springframework.web.bind.annotation.*;
  */
 @RestController
 @RequestMapping("/api/usuarios")
+@RequiredArgsConstructor
 public class UsuarioController {
 
     private final UsuarioService usuarioService;
-
-    public UsuarioController(UsuarioService usuarioService) {
-        this.usuarioService = usuarioService;
-    }
 
     @GetMapping("/me")
     public ResponseEntity<RespostaApiDTO> buscarPerfil(HttpSession sessao) {

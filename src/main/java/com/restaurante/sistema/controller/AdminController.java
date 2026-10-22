@@ -1,15 +1,15 @@
 package com.restaurante.sistema.controller;
 
-import com.restaurante.sistema.dto.CadastroFuncionarioDTO;
-import com.restaurante.sistema.dto.RespostaApiDTO;
-import com.restaurante.sistema.dto.UsuarioResumoDTO;
+import com.restaurante.sistema.dto.*;
 import com.restaurante.sistema.exception.AcessoNegadoException;
 import com.restaurante.sistema.exception.AutenticacaoNecessariaException;
-import com.restaurante.sistema.model.Funcionario;
+import com.restaurante.sistema.model.Usuario;
 import com.restaurante.sistema.service.AdminService;
 import com.restaurante.sistema.service.AutenticacaoService;
+import com.restaurante.sistema.service.UsuarioService;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,25 +17,17 @@ import java.util.List;
 
 /**
  * Endpoints exclusivos do painel administrativo: listar usuários,
- * cadastrar funcionário e excluir usuário.
- *
- * Cada método chama exigirAdministradorLogado() antes de qualquer
- * outra coisa — ela confere DUAS condições na sessão: (1) existe um
- * usuário logado? e (2) esse usuário é do tipo ADMINISTRADOR? Um
- * usuário comum logado recebe 403 (Forbidden): está autenticado, só
- * não tem permissão para este recurso.
+ * cadastrar funcionário/gestor, editar dados de um usuário e
+ * alternar o status dele (ativo/bloqueado).
  */
 @RestController
 @RequestMapping("/api/admin")
+@RequiredArgsConstructor
 public class AdminController {
 
     private final AdminService adminService;
     private final AutenticacaoService autenticacaoService;
-
-    public AdminController(AdminService adminService, AutenticacaoService autenticacaoService) {
-        this.adminService = adminService;
-        this.autenticacaoService = autenticacaoService;
-    }
+    private final UsuarioService usuarioService;
 
     /** Lista nome, e-mail, tipo e status de todos os usuários (sem dados sensíveis). */
     @GetMapping("/usuarios")
@@ -45,27 +37,42 @@ public class AdminController {
         return ResponseEntity.ok(new RespostaApiDTO(true, "Usuários carregados com sucesso.", usuarios));
     }
 
-    /**
-     * Cadastra um novo funcionário a partir da caixa "Cadastrar
-     * funcionário" do painel administrativo. Reaproveita a mesma
-     * regra de negócio (AutenticacaoService.cadastrarFuncionario) que
-     * valida CPF, e-mail duplicado e faz o hash da senha.
-     */
-    @PostMapping("/funcionarios")
-    public ResponseEntity<RespostaApiDTO> cadastrarFuncionario(@Valid @RequestBody CadastroFuncionarioDTO dto, HttpSession sessao) {
+    /** Edita nome e e-mail de um usuário qualquer (botão "Editar" da tabela). */
+    @PutMapping("/usuarios/{id}")
+    public ResponseEntity<RespostaApiDTO> editarUsuario(
+            @PathVariable Long id, @Valid @RequestBody AtualizarPerfilDTO dto, HttpSession sessao) {
         exigirAdministradorLogado(sessao);
-        Funcionario funcionarioCriado = autenticacaoService.cadastrarFuncionario(dto);
-        return ResponseEntity.ok(new RespostaApiDTO(
-                true,
-                "Funcionário cadastrado com sucesso!",
-                new UsuarioResumoDTO(funcionarioCriado)
-        ));
+        UsuarioRespostaDTO usuarioAtualizado = usuarioService.atualizarPerfil(id, dto);
+        return ResponseEntity.ok(new RespostaApiDTO(true, "Usuário atualizado com sucesso!", usuarioAtualizado));
+    }
+
+    /** Alterna o status do usuário entre ATIVO e BLOQUEADO (botão switch da tabela). */
+    @PatchMapping("/usuarios/{id}/status")
+    public ResponseEntity<RespostaApiDTO> alternarStatusUsuario(@PathVariable Long id, HttpSession sessao) {
+        exigirAdministradorLogado(sessao);
+        Long idAdministradorLogado = (Long) sessao.getAttribute("usuarioId");
+        UsuarioResumoDTO usuarioAtualizado = adminService.alternarStatusUsuario(id, idAdministradorLogado);
+        return ResponseEntity.ok(new RespostaApiDTO(true, "Status atualizado com sucesso!", usuarioAtualizado));
     }
 
     /**
-     * Exclui um usuário pelo id. O AdminService impede que o
-     * administrador exclua a própria conta por este caminho.
+     * Cadastra um Funcionário OU um Gestor, a partir da caixa
+     * "Cadastrar funcionário ou gestor" do painel. Qual dos dois é
+     * decidido pelo campo "tipoConta" do DTO — ver
+     * AutenticacaoService.cadastrarColaborador().
      */
+    @PostMapping("/colaboradores")
+    public ResponseEntity<RespostaApiDTO> cadastrarColaborador(@Valid @RequestBody CadastroFuncionarioDTO dto, HttpSession sessao) {
+        exigirAdministradorLogado(sessao);
+        Usuario colaboradorCriado = autenticacaoService.cadastrarColaborador(dto);
+        return ResponseEntity.ok(new RespostaApiDTO(
+                true,
+                "Cadastrado com sucesso!",
+                new UsuarioResumoDTO(colaboradorCriado)
+        ));
+    }
+
+    /** Exclui um usuário pelo id (mantido no backend mesmo sem botão correspondente hoje). */
     @DeleteMapping("/usuarios/{id}")
     public ResponseEntity<RespostaApiDTO> excluirUsuario(@PathVariable Long id, HttpSession sessao) {
         exigirAdministradorLogado(sessao);

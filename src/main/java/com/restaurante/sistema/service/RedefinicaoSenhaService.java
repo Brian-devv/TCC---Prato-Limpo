@@ -6,6 +6,7 @@ import com.restaurante.sistema.model.TokenRedefinicaoSenha;
 import com.restaurante.sistema.model.Usuario;
 import com.restaurante.sistema.repository.TokenRedefinicaoSenhaRepository;
 import com.restaurante.sistema.repository.UsuarioRepository;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -17,6 +18,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Service
+@RequiredArgsConstructor
 public class RedefinicaoSenhaService {
 
     private static final Logger log = LoggerFactory.getLogger(RedefinicaoSenhaService.class);
@@ -25,14 +27,6 @@ public class RedefinicaoSenhaService {
     private final UsuarioRepository usuarioRepository;
     private final TokenRedefinicaoSenhaRepository tokenRepository;
     private final PasswordEncoder passwordEncoder;
-
-    public RedefinicaoSenhaService(UsuarioRepository usuarioRepository,
-                                   TokenRedefinicaoSenhaRepository tokenRepository,
-                                   PasswordEncoder passwordEncoder) {
-        this.usuarioRepository = usuarioRepository;
-        this.tokenRepository = tokenRepository;
-        this.passwordEncoder = passwordEncoder;
-    }
 
     /**
      * Regra do redefinir-senha.html.

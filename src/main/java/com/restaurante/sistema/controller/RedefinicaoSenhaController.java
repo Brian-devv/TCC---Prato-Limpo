@@ -5,6 +5,7 @@ import com.restaurante.sistema.dto.RespostaApiDTO;
 import com.restaurante.sistema.dto.SolicitarRedefinicaoSenhaDTO;
 import com.restaurante.sistema.service.RedefinicaoSenhaService;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -16,13 +17,10 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 @RequestMapping("/api/auth/redefinir-senha")
+@RequiredArgsConstructor
 public class RedefinicaoSenhaController {
 
     private final RedefinicaoSenhaService redefinicaoSenhaService;
-
-    public RedefinicaoSenhaController(RedefinicaoSenhaService redefinicaoSenhaService) {
-        this.redefinicaoSenhaService = redefinicaoSenhaService;
-    }
 
     @PostMapping("/solicitar")
     public ResponseEntity<RespostaApiDTO> solicitar(@Valid @RequestBody SolicitarRedefinicaoSenhaDTO dto) {

@@ -1,28 +1,32 @@
 <!DOCTYPE html>
 <html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Cadastrar — Sistema</title>
+  <title>Cadastrar — Sistema Prato Limpo</title>
 
   <!-- Fontes do Google Fonts, usadas em todas as telas do sistema -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link
     href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap"
-    rel="stylesheet"
-  />
+    rel="stylesheet" />
 
   <link rel="stylesheet" th:href="@{/css/estilo.css}" />
 </head>
+
 <body>
 
   <main class="pagina-autenticacao">
     <section class="cartao-autenticacao" aria-labelledby="titulo-pagina">
 
+      <!-- Marca do sistema, clicável, leva para a página inicial (rota "/") -->
       <header class="cartao-autenticacao__marca">
-        <span class="marca-simbolo" aria-hidden="true">◆</span>
-        <span class="marca-nome">Sistema<span class="marca-nome--destaque"> Restaurante</span></span>
+        <a th:href="@{/}" class="marca-link" aria-label="Ir para a página inicial">
+          <span class="marca-simbolo" aria-hidden="true">◆</span>
+          <span class="marca-nome">Sistema<span class="marca-nome--destaque"> Prato Limpo</span></span>
+        </a>
       </header>
 
       <h1 id="titulo-pagina" class="cartao-autenticacao__titulo">Crie sua conta</h1>
@@ -42,84 +46,172 @@
 
           <div class="campo">
             <label for="cadastro-nome">Nome completo</label>
-            <input
-              type="text"
-              id="cadastro-nome"
-              name="nome"
-              autocomplete="name"
-              required
-              aria-describedby="cadastro-nome-erro"
-            />
+            <input type="text" id="cadastro-nome" name="nome" autocomplete="name" required
+              aria-describedby="cadastro-nome-erro" />
             <p class="campo__erro" id="cadastro-nome-erro" data-erro-para="cadastro-nome"></p>
           </div>
 
           <div class="campo">
             <label for="cadastro-email">E-mail</label>
-            <input
-              type="email"
-              id="cadastro-email"
-              name="email"
-              autocomplete="email"
-              required
-              aria-describedby="cadastro-email-erro"
-            />
+            <input type="email" id="cadastro-email" name="email" autocomplete="email" required
+              aria-describedby="cadastro-email-erro" />
             <p class="campo__erro" id="cadastro-email-erro" data-erro-para="cadastro-email"></p>
           </div>
 
-          <!-- CPF + Data de nascimento lado a lado, mesmo padrão visual usado em administrador.html -->
+          <!-- CPF + Data de nascimento lado a lado -->
           <div class="campo-duplo">
             <div class="campo">
               <label for="cadastro-cpf">CPF</label>
-              <input
-                type="text"
-                id="cadastro-cpf"
-                name="cpf"
-                inputmode="numeric"
-                placeholder="000.000.000-00"
-                maxlength="14"
-                required
-                aria-describedby="cadastro-cpf-erro"
-              />
+              <input type="text" id="cadastro-cpf" name="cpf" inputmode="numeric" placeholder="000.000.000-00"
+                maxlength="14" required aria-describedby="cadastro-cpf-erro" />
               <p class="campo__erro" id="cadastro-cpf-erro" data-erro-para="cadastro-cpf"></p>
             </div>
 
             <div class="campo">
               <label for="cadastro-data-nascimento">Data de nascimento</label>
-              <input
-                type="date"
-                id="cadastro-data-nascimento"
-                name="dataNascimento"
-                autocomplete="bday"
-                required
-                aria-describedby="cadastro-data-nascimento-erro"
-              />
+              <input type="date" id="cadastro-data-nascimento" name="dataNascimento" autocomplete="bday" required
+                aria-describedby="cadastro-data-nascimento-erro" />
               <p class="campo__erro" id="cadastro-data-nascimento-erro" data-erro-para="cadastro-data-nascimento"></p>
+            </div>
+          </div>
+
+          <!-- ============================================================
+               TIPO DE CONTA
+               Define qual subtipo de usuário será criado no backend. A
+               opção "Usuário comum" vem marcada por padrão e não precisa
+               de nenhum campo extra — as outras revelam campos próprios
+               (ver os blocos .campos-condicionais logo abaixo e o
+               cadastro.js, que mostra/esconde esses blocos conforme a
+               opção escolhida).
+               ============================================================ -->
+          <div class="campo">
+            <label>Tipo de conta</label>
+            <div class="grupo-radio" role="radiogroup" aria-label="Tipo de conta">
+              <label class="opcao-radio">
+                <input type="radio" name="tipoConta" value="USUARIO" checked /> Usuário comum
+              </label>
+              <label class="opcao-radio">
+                <input type="radio" name="tipoConta" value="PACIENTE" /> Paciente
+              </label>
+              <label class="opcao-radio">
+                <input type="radio" name="tipoConta" value="ALUNO" /> Aluno
+              </label>
+              <label class="opcao-radio">
+                <input type="radio" name="tipoConta" value="ESTAGIARIO" /> Estagiário
+              </label>
+              <label class="opcao-radio">
+                <input type="radio" name="tipoConta" value="NUTRICIONISTA" /> Nutricionista
+              </label>
+            </div>
+          </div>
+
+          <!-- Campos extras de PACIENTE (começam escondidos: "Usuário comum" é o padrão) -->
+          <div class="campos-condicionais" data-campos-para="PACIENTE" hidden>
+            <div class="campo">
+              <label for="cadastro-restricoes">Restrições alimentares</label>
+              <textarea id="cadastro-restricoes" name="restricoesAlimentares" rows="2"
+                placeholder="Ex: intolerância a lactose, alergia a amendoim..."
+                aria-describedby="cadastro-restricoes-erro"></textarea>
+              <p class="campo__erro" id="cadastro-restricoes-erro" data-erro-para="cadastro-restricoes"></p>
+            </div>
+            <div class="campo">
+              <label for="cadastro-prontuario">Número de prontuário</label>
+              <input type="number" id="cadastro-prontuario" name="numeroProntuario" min="1"
+                aria-describedby="cadastro-prontuario-erro" />
+              <p class="campo__erro" id="cadastro-prontuario-erro" data-erro-para="cadastro-prontuario"></p>
+            </div>
+          </div>
+
+          <!-- Campos extras de ALUNO -->
+          <div class="campos-condicionais" data-campos-para="ALUNO" hidden>
+            <div class="campo-duplo">
+              <div class="campo">
+                <label for="cadastro-aluno-curso">Curso</label>
+                <input type="text" id="cadastro-aluno-curso" name="curso"
+                  aria-describedby="cadastro-aluno-curso-erro" />
+                <p class="campo__erro" id="cadastro-aluno-curso-erro" data-erro-para="cadastro-aluno-curso"></p>
+              </div>
+              <div class="campo">
+                <label for="cadastro-aluno-matricula">Matrícula</label>
+                <input type="number" id="cadastro-aluno-matricula" name="matricula"
+                  aria-describedby="cadastro-aluno-matricula-erro" />
+                <p class="campo__erro" id="cadastro-aluno-matricula-erro" data-erro-para="cadastro-aluno-matricula"></p>
+              </div>
+            </div>
+            <div class="campo">
+              <label for="cadastro-aluno-instituicao">Instituição de ensino</label>
+              <input type="text" id="cadastro-aluno-instituicao" name="instituicao"
+                aria-describedby="cadastro-aluno-instituicao-erro" />
+              <p class="campo__erro" id="cadastro-aluno-instituicao-erro" data-erro-para="cadastro-aluno-instituicao">
+              </p>
+            </div>
+          </div>
+
+          <!-- Campos extras de ESTAGIÁRIO (igual Aluno + período do estágio) -->
+          <div class="campos-condicionais" data-campos-para="ESTAGIARIO" hidden>
+            <div class="campo-duplo">
+              <div class="campo">
+                <label for="cadastro-estagiario-curso">Curso</label>
+                <input type="text" id="cadastro-estagiario-curso" name="curso"
+                  aria-describedby="cadastro-estagiario-curso-erro" />
+                <p class="campo__erro" id="cadastro-estagiario-curso-erro" data-erro-para="cadastro-estagiario-curso">
+                </p>
+              </div>
+              <div class="campo">
+                <label for="cadastro-estagiario-matricula">Matrícula</label>
+                <input type="number" id="cadastro-estagiario-matricula" name="matricula"
+                  aria-describedby="cadastro-estagiario-matricula-erro" />
+                <p class="campo__erro" id="cadastro-estagiario-matricula-erro"
+                  data-erro-para="cadastro-estagiario-matricula"></p>
+              </div>
+            </div>
+            <div class="campo">
+              <label for="cadastro-estagiario-instituicao">Instituição de ensino</label>
+              <input type="text" id="cadastro-estagiario-instituicao" name="instituicao"
+                aria-describedby="cadastro-estagiario-instituicao-erro" />
+              <p class="campo__erro" id="cadastro-estagiario-instituicao-erro"
+                data-erro-para="cadastro-estagiario-instituicao"></p>
+            </div>
+            <div class="campo-duplo">
+              <div class="campo">
+                <label for="cadastro-estagiario-data-inicio">Início do estágio</label>
+                <input type="date" id="cadastro-estagiario-data-inicio" name="dataInicioEstagio"
+                  aria-describedby="cadastro-estagiario-data-inicio-erro" />
+                <p class="campo__erro" id="cadastro-estagiario-data-inicio-erro"
+                  data-erro-para="cadastro-estagiario-data-inicio"></p>
+              </div>
+              <div class="campo">
+                <label for="cadastro-estagiario-data-fim">Término do estágio</label>
+                <input type="date" id="cadastro-estagiario-data-fim" name="dataFimEstagio"
+                  aria-describedby="cadastro-estagiario-data-fim-erro" />
+                <p class="campo__erro" id="cadastro-estagiario-data-fim-erro"
+                  data-erro-para="cadastro-estagiario-data-fim"></p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Campo extra de NUTRICIONISTA -->
+          <div class="campos-condicionais" data-campos-para="NUTRICIONISTA" hidden>
+            <div class="campo">
+              <label for="cadastro-nutricionista-registro">Registro profissional (CRN)</label>
+              <input type="text" id="cadastro-nutricionista-registro" name="registroProfissional"
+                aria-describedby="cadastro-nutricionista-registro-erro" />
+              <p class="campo__erro" id="cadastro-nutricionista-registro-erro"
+                data-erro-para="cadastro-nutricionista-registro"></p>
             </div>
           </div>
 
           <div class="campo">
             <label for="cadastro-senha">Senha</label>
             <div class="grupo-entrada">
-              <input
-                type="password"
-                id="cadastro-senha"
-                name="senha"
-                autocomplete="new-password"
-                required
-                aria-describedby="cadastro-senha-erro rotulo-forca"
-              />
-              <button
-                type="button"
-                class="grupo-entrada__alternar"
-                data-alternar-senha="cadastro-senha"
-                aria-pressed="false"
-                aria-label="Mostrar senha"
-              >
+              <input type="password" id="cadastro-senha" name="senha" autocomplete="new-password" required
+                aria-describedby="cadastro-senha-erro rotulo-forca" />
+              <button type="button" class="grupo-entrada__alternar" data-alternar-senha="cadastro-senha"
+                aria-pressed="false" aria-label="Mostrar senha">
                 👁
               </button>
             </div>
 
-            <!-- Medidor de força: barras + rótulo, atualizados em tempo real por utilitarios.js -->
             <div class="medidor-forca" data-elemento="medidor-forca">
               <div class="medidor-forca__barras">
                 <span class="medidor-forca__barra" data-barra="0"></span>
@@ -137,14 +229,8 @@
 
           <div class="campo">
             <label for="cadastro-confirmar-senha">Confirmar senha</label>
-            <input
-              type="password"
-              id="cadastro-confirmar-senha"
-              name="confirmarSenha"
-              autocomplete="new-password"
-              required
-              aria-describedby="cadastro-confirmar-senha-erro"
-            />
+            <input type="password" id="cadastro-confirmar-senha" name="confirmarSenha" autocomplete="new-password"
+              required aria-describedby="cadastro-confirmar-senha-erro" />
             <p class="campo__erro" id="cadastro-confirmar-senha-erro" data-erro-para="cadastro-confirmar-senha"></p>
           </div>
 
@@ -157,9 +243,9 @@
     </section>
   </main>
 
-  <!-- utilitarios.js precisa vir ANTES de cadastro.js: cadastro.js usa
-       funções definidas nele (mostrarAlerta, validarCPF, formatarCPF, etc.) -->
+  <!-- utilitarios.js precisa vir ANTES de cadastro.js -->
   <script th:src="@{/js/utilitarios.js}"></script>
   <script th:src="@{/js/cadastro.js}"></script>
 </body>
+
 </html>

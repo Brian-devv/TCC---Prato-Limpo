@@ -150,3 +150,74 @@
   color: var(--cor-texto-suave);
   font-size: 13px;
 }
+
+/* ---------------------------------------------------------- */
+/* SWITCH DE STATUS (ativar / bloquear usuário)                */
+/* Um <input type="checkbox"> escondido, estilizado como um     */
+/* interruptor: "checked" = ativo (verde), "unchecked" = bloqueado. */
+/* ---------------------------------------------------------- */
+.interruptor {
+  position: relative;
+  display: inline-block;
+  width: 36px;
+  height: 20px;
+  vertical-align: middle;
+  cursor: pointer;
+}
+.interruptor input {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+.interruptor__trilho {
+  position: absolute;
+  inset: 0;
+  background: var(--cor-perigo);
+  border-radius: 999px;
+  transition: background var(--transicao-base);
+}
+.interruptor__trilho::before {
+  content: "";
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  left: 2px;
+  top: 2px;
+  background: #fff;
+  border-radius: 50%;
+  transition: transform var(--transicao-base);
+}
+.interruptor input:checked + .interruptor__trilho {
+  background: var(--cor-sucesso);
+}
+.interruptor input:checked + .interruptor__trilho::before {
+  transform: translateX(16px);
+}
+.interruptor__rotulo {
+  margin-left: 8px;
+  font-size: 12px;
+  color: var(--cor-texto-suave);
+  vertical-align: middle;
+}
+
+/* Botão "Salvar" na edição em linha (variante de sucesso do botao-tabela) */
+.botao-tabela--sucesso {
+  color: var(--cor-sucesso);
+}
+.botao-tabela--sucesso:hover {
+  background: var(--cor-sucesso-fundo);
+}
+
+/* Campo de texto usado durante a edição em linha da tabela (nome/e-mail) */
+.entrada-tabela {
+  width: 100%;
+  font-family: var(--fonte-corpo);
+  font-size: 13px;
+  padding: 6px 8px;
+  border: 1.5px solid var(--cor-borda);
+  border-radius: 6px;
+}
+.entrada-tabela:focus {
+  border-color: var(--cor-borda-foco);
+}

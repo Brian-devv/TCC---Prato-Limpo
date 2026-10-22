@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Acesso administrativo — Sistema</title>
+    <title>Acesso administrativo — Sistema Prato Limpo</title>
 
     <!-- Fontes do Google Fonts, usadas em todas as telas do sistema -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -22,8 +22,10 @@
         <section class="cartao-autenticacao" aria-labelledby="titulo-pagina">
 
             <header class="cartao-autenticacao__marca">
-                <span class="marca-simbolo" aria-hidden="true">◆</span>
-                <span class="marca-nome">Sistema<span class="marca-nome--destaque"> Restaurante</span></span>
+                <a th:href="@{/}" class="marca-link" aria-label="Ir para a página inicial">
+                    <span class="marca-simbolo" aria-hidden="true">◆</span>
+                    <span class="marca-nome">Sistema<span class="marca-nome--destaque"> Prato Limpo</span></span>
+                </a>
             </header>
 
             <!-- Link de volta para o login comum -->

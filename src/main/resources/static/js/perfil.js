@@ -43,7 +43,6 @@ function carregarPerfil() {
 
 function exibirDadosPerfil(usuario) {
   document.querySelector("[data-campo='nome']").textContent = usuario.nome;
-  document.querySelector("[data-campo='email']").textContent = usuario.email;
   document.querySelector("[data-campo='cpf']").textContent = formatarCPF(usuario.cpf);
   document.querySelector("[data-campo='dataNascimento']").textContent = formatarData(usuario.dataNascimento);
   document.querySelector("[data-campo='tipoPerfil']").textContent = formatarTipoPerfil(usuario.tipoPerfil);
@@ -60,7 +59,16 @@ function exibirDadosPerfil(usuario) {
 }
 
 function formatarTipoPerfil(tipoPerfil) {
-  const rotulos = { USUARIO: "Usuário comum", FUNCIONARIO: "Funcionário", ADMINISTRADOR: "Administrador" };
+  const rotulos = {
+    USUARIO: "Usuário comum",
+    FUNCIONARIO: "Funcionário",
+    ADMINISTRADOR: "Administrador",
+    GESTOR: "Gestor",
+    PACIENTE: "Paciente",
+    ALUNO: "Aluno",
+    ESTAGIARIO: "Estagiário",
+    NUTRICIONISTA: "Nutricionista",
+  };
   return rotulos[tipoPerfil] || tipoPerfil;
 }
 

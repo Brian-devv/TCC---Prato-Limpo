@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Meu perfil — Sistema</title>
+    <title>Meu perfil — Sistema Prato Limpo</title>
 
     <!-- Fontes do Google Fonts, usadas em todas as telas do sistema -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -13,8 +13,6 @@
         href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap"
         rel="stylesheet" />
 
-    <!-- estilo.css: variáveis/base compartilhadas por todo o sistema -->
-    <!-- perfil.css: estilos específicos desta tela (lista de dados, botão de perigo, etc.) -->
     <link rel="stylesheet" th:href="@{/css/estilo.css}" />
     <link rel="stylesheet" th:href="@{/css/perfil.css}" />
 </head>
@@ -24,10 +22,12 @@
     <main class="pagina-autenticacao">
         <section class="cartao-perfil" aria-labelledby="titulo-pagina">
 
-            <!-- Marca do sistema, igual em todas as telas -->
+            <!-- Marca do sistema, clicável, leva para a página inicial (rota "/") -->
             <header class="cartao-autenticacao__marca">
-                <span class="marca-simbolo" aria-hidden="true">◆</span>
-                <span class="marca-nome">Sistema<span class="marca-nome--destaque"> Restaurante</span></span>
+                <a th:href="@{/}" class="marca-link" aria-label="Ir para a página inicial">
+                    <span class="marca-simbolo" aria-hidden="true">◆</span>
+                    <span class="marca-nome">Sistema<span class="marca-nome--destaque"> Prato Limpo</span></span>
+                </a>
             </header>
 
             <!-- Link de volta: aponta para /painel por padrão, mas o perfil.js
@@ -41,8 +41,7 @@
 
             <h1 id="titulo-pagina" class="cartao-autenticacao__titulo">Meu perfil</h1>
 
-            <!-- Alerta genérico (sucesso/erro), controlado via JS pelas funções
-           mostrarAlerta()/esconderAlerta() de utilitarios.js -->
+            <!-- Alerta genérico (sucesso/erro), controlado via JS (utilitarios.js) -->
             <div class="alerta" role="status" aria-live="polite" data-elemento="alerta" hidden></div>
 
             <!-- Estado de carregamento: visível enquanto o fetch a GET /api/usuarios/me
@@ -55,37 +54,16 @@
 
                 <!-- ============================================================
              MODO VISUALIZAÇÃO
-             Mostra os dados atuais e os botões de ação. Fica visível por
-             padrão; é escondido quando o usuário clica em "Editar perfil".
+             De propósito, mostra SÓ o nome — nenhum outro dado (e-mail,
+             CPF, data de nascimento, tipo de conta) fica exposto aqui.
+             Para ver ou alterar esses dados, a pessoa precisa clicar em
+             "Editar perfil", que abre o formulário abaixo.
              ============================================================ -->
                 <div data-elemento="visualizacao-perfil">
 
-                    <dl class="lista-dados">
-                        <div class="lista-dados__item">
-                            <dt>Nome</dt>
-                            <dd data-campo="nome"></dd>
-                        </div>
-                        <div class="lista-dados__item">
-                            <dt>E-mail</dt>
-                            <dd data-campo="email"></dd>
-                        </div>
-                        <div class="lista-dados__item">
-                            <dt>CPF</dt>
-                            <dd data-campo="cpf"></dd>
-                        </div>
-                        <div class="lista-dados__item">
-                            <dt>Data de nascimento</dt>
-                            <dd data-campo="dataNascimento"></dd>
-                        </div>
-                        <div class="lista-dados__item">
-                            <dt>Tipo de conta</dt>
-                            <dd data-campo="tipoPerfil"></dd>
-                        </div>
-                        <div class="lista-dados__item">
-                            <dt>Conta criada em</dt>
-                            <dd data-campo="dataCriacaoConta"></dd>
-                        </div>
-                    </dl>
+                    <p class="perfil-saudacao">
+                        Olá, <strong data-campo="nome"></strong>!
+                    </p>
 
                     <div class="acoes-perfil">
                         <button type="button" class="botao botao--contorno botao--bloco" data-acao="editar-perfil">
@@ -108,9 +86,13 @@
 
                 <!-- ============================================================
              MODO EDIÇÃO
-             Escondido (hidden) até o usuário clicar em "Editar perfil".
-             O perfil.js preenche os campos com os dados atuais antes de
-             exibir este formulário, e o envia via PUT /api/usuarios/me.
+             Escondido até o usuário clicar em "Editar perfil". É AQUI
+             que os demais dados aparecem: nome e e-mail são editáveis
+             (enviados via PUT /api/usuarios/me); CPF, data de
+             nascimento, tipo de conta e data de criação são exibidos
+             como informação (somente leitura) — não fazem parte do
+             formulário de edição, só ajudam a pessoa a conferir os
+             próprios dados cadastrais.
              ============================================================ -->
                 <form id="formulario-editar-perfil" novalidate hidden>
                     <fieldset class="formulario">
@@ -136,6 +118,26 @@
                         <button type="button" class="botao botao--contorno botao--bloco" data-acao="cancelar-edicao">
                             Cancelar
                         </button>
+
+                        <!-- Dados adicionais, somente leitura (não editáveis por aqui) -->
+                        <dl class="lista-dados lista-dados--somente-leitura">
+                            <div class="lista-dados__item">
+                                <dt>CPF</dt>
+                                <dd data-campo="cpf"></dd>
+                            </div>
+                            <div class="lista-dados__item">
+                                <dt>Data de nascimento</dt>
+                                <dd data-campo="dataNascimento"></dd>
+                            </div>
+                            <div class="lista-dados__item">
+                                <dt>Tipo de conta</dt>
+                                <dd data-campo="tipoPerfil"></dd>
+                            </div>
+                            <div class="lista-dados__item">
+                                <dt>Conta criada em</dt>
+                                <dd data-campo="dataCriacaoConta"></dd>
+                            </div>
+                        </dl>
                     </fieldset>
                 </form>
 

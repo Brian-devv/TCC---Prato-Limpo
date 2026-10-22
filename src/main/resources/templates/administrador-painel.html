@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Painel administrativo — Sistema</title>
+    <title>Painel administrativo — Sistema Prato Limpo</title>
 
     <!-- Fontes do Google Fonts, usadas em todas as telas do sistema -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -31,8 +31,10 @@
        ============================================================ -->
     <header class="barra-superior">
         <div class="barra-superior__marca">
-            <span class="marca-simbolo" aria-hidden="true">◆</span>
-            <span class="marca-nome">Sistema<span class="marca-nome--destaque"> Restaurante</span></span>
+            <a th:href="@{/}" class="marca-link" aria-label="Ir para a página inicial">
+                <span class="marca-simbolo" aria-hidden="true">◆</span>
+                <span class="marca-nome">Sistema<span class="marca-nome--destaque"> Prato Limpo</span></span>
+            </a>
         </div>
 
         <div class="menu-usuario">
@@ -118,11 +120,28 @@
          para o funcionário recém-criado já aparecer na listagem.
          ============================================================ -->
         <section class="secao-usuarios secao-cadastro-funcionario">
-            <h2 class="secao-usuarios__titulo">Cadastrar funcionário</h2>
+            <h2 class="secao-usuarios__titulo">Cadastrar funcionário ou gestor</h2>
 
             <form id="formulario-cadastrar-funcionario" novalidate>
                 <fieldset class="formulario">
-                    <legend class="somente-leitor">Dados do novo funcionário</legend>
+                    <legend class="somente-leitor">Dados do novo funcionário ou gestor</legend>
+
+                    <!-- ============================================================
+               TIPO DE CADASTRO
+               Decide se o bloco Cargo/Setor aparece (só Funcionário tem
+               esses campos no diagrama; Gestor tem só registro
+               profissional). Ver administrador-painel.js. -->
+                    <div class="campo">
+                        <label>Tipo de cadastro</label>
+                        <div class="grupo-radio" role="radiogroup" aria-label="Tipo de cadastro">
+                            <label class="opcao-radio">
+                                <input type="radio" name="tipoColaborador" value="FUNCIONARIO" checked /> Funcionário
+                            </label>
+                            <label class="opcao-radio">
+                                <input type="radio" name="tipoColaborador" value="GESTOR" /> Gestor
+                            </label>
+                        </div>
+                    </div>
 
                     <div class="campo">
                         <label for="funcionario-nome">Nome completo</label>
@@ -157,20 +176,42 @@
                         </div>
                     </div>
 
-                    <!-- Cargo + Setor lado a lado -->
-                    <div class="campo-duplo">
-                        <div class="campo">
-                            <label for="funcionario-cargo">Cargo</label>
-                            <input type="text" id="funcionario-cargo" name="cargo" required
-                                aria-describedby="funcionario-cargo-erro" />
-                            <p class="campo__erro" id="funcionario-cargo-erro" data-erro-para="funcionario-cargo"></p>
-                        </div>
+                    <!-- Cargo + Setor — só fazem parte do cadastro de FUNCIONÁRIO
+               (um Gestor, no diagrama, não tem esses campos) -->
+                    <div class="campos-condicionais" data-campos-para="FUNCIONARIO">
+                        <div class="campo-duplo">
+                            <div class="campo">
+                                <label for="funcionario-cargo">Cargo</label>
+                                <!-- Lista fixa de opções em vez de texto livre — evita
+                     variações de escrita para o mesmo cargo (ex: "cozinheira"
+                     vs "Cozinheiro(a)"). Ajuste as opções conforme os
+                     cargos reais do restaurante. -->
+                                <select id="funcionario-cargo" name="cargo" aria-describedby="funcionario-cargo-erro">
+                                    <option value="" disabled selected>Selecione o cargo</option>
+                                    <option value="Cozinheiro(a)">Cozinheiro(a)</option>
+                                    <option value="Auxiliar de Cozinha">Auxiliar de Cozinha</option>
+                                    <option value="Nutricionista">Nutricionista</option>
+                                    <option value="Atendente">Atendente</option>
+                                    <option value="Auxiliar de Limpeza">Auxiliar de Limpeza</option>
+                                    <option value="Gestor de Refeitório">Gestor de Refeitório</option>
+                                </select>
+                                <p class="campo__erro" id="funcionario-cargo-erro" data-erro-para="funcionario-cargo">
+                                </p>
+                            </div>
 
-                        <div class="campo">
-                            <label for="funcionario-setor">Setor</label>
-                            <input type="text" id="funcionario-setor" name="setor" required
-                                aria-describedby="funcionario-setor-erro" />
-                            <p class="campo__erro" id="funcionario-setor-erro" data-erro-para="funcionario-setor"></p>
+                            <div class="campo">
+                                <label for="funcionario-setor">Setor</label>
+                                <select id="funcionario-setor" name="setor" aria-describedby="funcionario-setor-erro">
+                                    <option value="" disabled selected>Selecione o setor</option>
+                                    <option value="Cozinha">Cozinha</option>
+                                    <option value="Nutrição">Nutrição</option>
+                                    <option value="Atendimento">Atendimento</option>
+                                    <option value="Limpeza">Limpeza</option>
+                                    <option value="Administração">Administração</option>
+                                </select>
+                                <p class="campo__erro" id="funcionario-setor-erro" data-erro-para="funcionario-setor">
+                                </p>
+                            </div>
                         </div>
                     </div>
 
@@ -216,7 +257,7 @@
                     </div>
 
                     <button type="submit" class="botao botao--acento botao--bloco">
-                        Cadastrar funcionário
+                        Cadastrar
                     </button>
                 </fieldset>
             </form>

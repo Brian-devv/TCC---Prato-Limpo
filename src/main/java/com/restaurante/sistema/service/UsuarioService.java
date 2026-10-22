@@ -8,6 +8,7 @@ import com.restaurante.sistema.model.Usuario;
 import com.restaurante.sistema.repository.EmailRepository;
 import com.restaurante.sistema.repository.TokenRedefinicaoSenhaRepository;
 import com.restaurante.sistema.repository.UsuarioRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,22 +23,13 @@ import java.time.LocalDateTime;
  * própria conta depois de já estar logado".
  */
 @Service
+@RequiredArgsConstructor
 public class UsuarioService {
 
     private final UsuarioRepository usuarioRepository;
     private final EmailRepository emailRepository;
     private final TokenRedefinicaoSenhaRepository tokenRedefinicaoSenhaRepository;
     private final PasswordEncoder passwordEncoder;
-
-    public UsuarioService(UsuarioRepository usuarioRepository,
-                          EmailRepository emailRepository,
-                          TokenRedefinicaoSenhaRepository tokenRedefinicaoSenhaRepository,
-                          PasswordEncoder passwordEncoder) {
-        this.usuarioRepository = usuarioRepository;
-        this.emailRepository = emailRepository;
-        this.tokenRedefinicaoSenhaRepository = tokenRedefinicaoSenhaRepository;
-        this.passwordEncoder = passwordEncoder;
-    }
 
     /** READ — usado pela tela de perfil pra exibir os dados atuais. */
     @Transactional(readOnly = true)

@@ -21,6 +21,24 @@
   gap: 14px;
 }
 
+/* Saudação da tela de perfil (modo visualização) — só o nome aparece */
+.perfil-saudacao {
+  font-size: 18px;
+  color: var(--cor-texto);
+  margin: 0 0 24px;
+}
+.perfil-saudacao strong {
+  font-family: var(--fonte-titulo);
+}
+
+/* Lista de dados somente leitura, exibida dentro do formulário de edição
+   (CPF, data de nascimento, etc. — não fazem parte do que é editável) */
+.lista-dados--somente-leitura {
+  margin-top: 24px;
+  padding-top: 16px;
+  border-top: 1px dashed var(--cor-borda);
+}
+
 .lista-dados__item {
   display: flex;
   flex-direction: column;

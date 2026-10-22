@@ -158,6 +158,12 @@ function mostrarAlerta(mensagem, variante = "sucesso") {
   elementoAlerta.textContent = mensagem;
   elementoAlerta.dataset.variante = variante;
   elementoAlerta.hidden = false;
+
+  // Em páginas mais longas (ex: painel administrativo), o alerta pode
+  // ficar fora da área visível se o usuário estiver com a tela rolada
+  // para baixo (ex: preenchendo um formulário no fim da página). Rolar
+  // até ele garante que a mensagem sempre seja vista.
+  elementoAlerta.scrollIntoView({ behavior: "smooth", block: "center" });
 }
 
 function esconderAlerta() {

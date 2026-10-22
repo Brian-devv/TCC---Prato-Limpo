@@ -5,36 +5,34 @@ import com.restaurante.sistema.exception.RegraNegocioException;
 import com.restaurante.sistema.model.Usuario;
 import com.restaurante.sistema.repository.TokenRedefinicaoSenhaRepository;
 import com.restaurante.sistema.repository.UsuarioRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 /**
  * Regras de negócio exclusivas do painel administrativo.
  *
- * Este service NÃO cuida da criação de usuários — isso continua
- * reaproveitando o AutenticacaoService.cadastrarUsuario(), chamado
- * diretamente pelo AdminController. Aqui ficam só as regras
- * específicas do administrador: listar e excluir.
+ * A criação de funcionários continua reaproveitando
+ * AutenticacaoService.cadastrarFuncionario(), e a edição de dados
+ * (nome/e-mail) reaproveita UsuarioService.atualizarPerfil() — ambas
+ * chamadas diretamente pelo AdminController. Aqui ficam só as regras
+ * específicas do administrador: listar e alternar status.
  */
 @Service
+@RequiredArgsConstructor
 public class AdminService {
 
     private final UsuarioRepository usuarioRepository;
     private final TokenRedefinicaoSenhaRepository tokenRedefinicaoSenhaRepository;
 
-    public AdminService(UsuarioRepository usuarioRepository,
-                        TokenRedefinicaoSenhaRepository tokenRedefinicaoSenhaRepository) {
-        this.usuarioRepository = usuarioRepository;
-        this.tokenRedefinicaoSenhaRepository = tokenRedefinicaoSenhaRepository;
-    }
-
     /**
-     * Lista todos os usuários do sistema (comuns, administradores e,
-     * no futuro, outros subtipos). Com a herança JOINED, consultar o
-     * repositório da entidade base (Usuario) já traz todo mundo
-     * automaticamente, sem precisar de union manual entre tabelas.
+     * Lista todos os usuários do sistema (comuns, administradores,
+     * funcionários e outros subtipos futuros). Com a herança JOINED,
+     * consultar o repositório da entidade base (Usuario) já traz todo
+     * mundo automaticamente.
      */
     @Transactional(readOnly = true)
     public List<UsuarioResumoDTO> listarUsuarios() {
@@ -45,17 +43,39 @@ public class AdminService {
     }
 
     /**
+     * Alterna o status de um usuário entre ATIVO e BLOQUEADO — é o
+     * botão "switch" da tabela. Um usuário BLOQUEADO não consegue
+     * fazer login (ver AutenticacaoService.autenticar(), que já
+     * confere o status).
+     *
+     * Regra de segurança: um administrador não pode bloquear a
+     * própria conta por aqui (evitaria se trancar para fora do
+     * sistema sem querer).
+     */
+    @Transactional
+    public UsuarioResumoDTO alternarStatusUsuario(Long idParaAlterar, Long idAdministradorLogado) {
+        if (idParaAlterar.equals(idAdministradorLogado)) {
+            throw new RegraNegocioException("Você não pode bloquear a própria conta.");
+        }
+
+        Usuario usuario = usuarioRepository.findById(idParaAlterar)
+                .orElseThrow(() -> new RegraNegocioException("Usuário não encontrado."));
+
+        String novoStatus = "ATIVO".equals(usuario.getStatus()) ? "BLOQUEADO" : "ATIVO";
+        usuario.setStatus(novoStatus);
+        usuario.setDataAtualizacao(LocalDateTime.now());
+
+        Usuario usuarioSalvo = usuarioRepository.save(usuario);
+        return new UsuarioResumoDTO(usuarioSalvo);
+    }
+
+    /**
      * Exclui um usuário pelo id.
      *
-     * Regra de segurança: um administrador não pode excluir a própria
-     * conta por aqui — evita que ele se tranque para fora do sistema
-     * sem querer. Se quiser excluir a própria conta, o caminho é a
-     * tela de perfil normal (/perfil).
-     *
-     * Antes de excluir o usuário, apagamos os tokens de redefinição
-     * de senha associados a ele (tabela sem cascade mapeado em
-     * Usuario) — senão o banco recusa a exclusão por causa da chave
-     * estrangeira "usuario_id" em token_redefinicao_senha.
+     * Mantido no backend mesmo sem botão correspondente na tela hoje
+     * (o painel passou a usar bloquear/ativar em vez de excluir na
+     * tabela) — pode ser reaproveitado no futuro se fizer sentido ter
+     * uma exclusão definitiva em algum outro lugar da interface.
      */
     @Transactional
     public void excluirUsuario(Long idParaExcluir, Long idAdministradorLogado) {

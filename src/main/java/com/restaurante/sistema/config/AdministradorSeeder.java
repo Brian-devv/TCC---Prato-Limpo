@@ -1,7 +1,9 @@
 package com.restaurante.sistema.config;
+
 import com.restaurante.sistema.model.Administrador;
 import com.restaurante.sistema.model.Email;
 import com.restaurante.sistema.repository.AdministradorRepository;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -23,17 +25,13 @@ import java.time.LocalDateTime;
  * (ex: exigir troca de senha no primeiro login).
  */
 @Component
+@RequiredArgsConstructor
 public class AdministradorSeeder implements CommandLineRunner {
 
     private static final Logger log = LoggerFactory.getLogger(AdministradorSeeder.class);
 
     private final AdministradorRepository administradorRepository;
     private final PasswordEncoder passwordEncoder;
-
-    public AdministradorSeeder(AdministradorRepository administradorRepository, PasswordEncoder passwordEncoder) {
-        this.administradorRepository = administradorRepository;
-        this.passwordEncoder = passwordEncoder;
-    }
 
     @Value("${admin.email:admin@restaurante.com}")
     private String emailAdminPadrao;

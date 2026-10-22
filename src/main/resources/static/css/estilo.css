@@ -105,6 +105,14 @@ input:focus-visible {
 }
 .marca-nome--destaque { color: var(--cor-acento); }
 
+/* Link que envolve a marca (ícone + nome), usado para voltar à página inicial */
+.marca-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  text-decoration: none;
+}
+
 /* Título de página (h1) — semântico, mas visualmente discreto */
 .cartao-autenticacao__titulo {
   font-family: var(--fonte-corpo);
@@ -244,6 +252,80 @@ fieldset.formulario {
 }
 .campo input:focus {
   border-color: var(--cor-borda-foco);
+}
+
+/* Mesma aparência dos inputs, aplicada a campos <select> (ex: cargo, setor) */
+.campo select {
+  font-family: var(--fonte-corpo);
+  font-size: 15px;
+  padding: 11px 12px;
+  border: 1.5px solid var(--cor-borda);
+  border-radius: var(--raio-pequeno);
+  background: var(--cor-superficie);
+  color: var(--cor-texto);
+  transition: border-color var(--transicao-base);
+  width: 100%;
+}
+.campo select:focus {
+  border-color: var(--cor-borda-foco);
+}
+
+/* Mesma aparência dos inputs, aplicada a <textarea> (ex: restrições alimentares) */
+.campo textarea {
+  font-family: var(--fonte-corpo);
+  font-size: 15px;
+  padding: 11px 12px;
+  border: 1.5px solid var(--cor-borda);
+  border-radius: var(--raio-pequeno);
+  background: var(--cor-superficie);
+  color: var(--cor-texto);
+  transition: border-color var(--transicao-base);
+  width: 100%;
+  resize: vertical;
+  min-height: 64px;
+}
+.campo textarea:focus {
+  border-color: var(--cor-borda-foco);
+}
+
+/* ============================================================
+   GRUPO DE OPÇÕES (radio buttons)
+   Usado para "Tipo de conta" no cadastro e "Tipo de cadastro"
+   (Funcionário/Gestor) no painel administrativo.
+   ============================================================ */
+.grupo-radio {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 20px;
+  padding: 4px 0;
+}
+
+.opcao-radio {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+  color: var(--cor-texto);
+  cursor: pointer;
+}
+
+/* Bloco de campos que só aparece dependendo da opção escolhida acima.
+   IMPORTANTE: "display: flex" só é aplicado quando o elemento NÃO tem
+   o atributo "hidden" — sem o ":not([hidden])", essa regra sobrescreve
+   o comportamento padrão do navegador de esconder elementos com
+   "hidden" (porque uma regra do autor do CSS tem prioridade sobre a
+   regra padrão do navegador, mesmo que a daqui tenha "menos força"
+   de seletor). Esse foi exatamente o bug de todos os campos
+   aparecerem ao mesmo tempo, independente do tipo de conta escolhido. */
+.campos-condicionais {
+  display: none;
+  flex-direction: column;
+  gap: 16px;
+  padding-left: 12px;
+  border-left: 2px solid var(--cor-borda);
+}
+.campos-condicionais:not([hidden]) {
+  display: flex;
 }
 
 /* Estado de validação visual */
