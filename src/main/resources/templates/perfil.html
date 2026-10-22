@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Meu perfil — Sistema</title>
+
+    <!-- Fontes do Google Fonts, usadas em todas as telas do sistema -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap"
+        rel="stylesheet" />
+
+    <!-- estilo.css: variáveis/base compartilhadas por todo o sistema -->
+    <!-- perfil.css: estilos específicos desta tela (lista de dados, botão de perigo, etc.) -->
+    <link rel="stylesheet" th:href="@{/css/estilo.css}" />
+    <link rel="stylesheet" th:href="@{/css/perfil.css}" />
+</head>
+
+<body>
+
+    <main class="pagina-autenticacao">
+        <section class="cartao-perfil" aria-labelledby="titulo-pagina">
+
+            <!-- Marca do sistema, igual em todas as telas -->
+            <header class="cartao-autenticacao__marca">
+                <span class="marca-simbolo" aria-hidden="true">◆</span>
+                <span class="marca-nome">Sistema<span class="marca-nome--destaque"> Restaurante</span></span>
+            </header>
+
+            <!-- Link de volta: aponta para /painel por padrão, mas o perfil.js
+           troca o destino para /administrador/painel se quem estiver
+           logado for um administrador (ver exibirDadosPerfil()) -->
+            <nav aria-label="Voltar">
+                <a th:href="@{/painel}" class="botao-voltar" data-elemento="link-voltar">
+                    <span aria-hidden="true">←</span> Voltar ao painel
+                </a>
+            </nav>
+
+            <h1 id="titulo-pagina" class="cartao-autenticacao__titulo">Meu perfil</h1>
+
+            <!-- Alerta genérico (sucesso/erro), controlado via JS pelas funções
+           mostrarAlerta()/esconderAlerta() de utilitarios.js -->
+            <div class="alerta" role="status" aria-live="polite" data-elemento="alerta" hidden></div>
+
+            <!-- Estado de carregamento: visível enquanto o fetch a GET /api/usuarios/me
+           ainda não respondeu. O perfil.js esconde isso assim que os dados chegam. -->
+            <p data-elemento="carregando" class="painel__descricao">Carregando seus dados...</p>
+
+            <!-- Conteúdo real do perfil: começa escondido (hidden) e só aparece
+           depois que os dados do usuário chegam da API (ver perfil.js) -->
+            <div data-elemento="conteudo-perfil" hidden>
+
+                <!-- ============================================================
+             MODO VISUALIZAÇÃO
+             Mostra os dados atuais e os botões de ação. Fica visível por
+             padrão; é escondido quando o usuário clica em "Editar perfil".
+             ============================================================ -->
+                <div data-elemento="visualizacao-perfil">
+
+                    <dl class="lista-dados">
+                        <div class="lista-dados__item">
+                            <dt>Nome</dt>
+                            <dd data-campo="nome"></dd>
+                        </div>
+                        <div class="lista-dados__item">
+                            <dt>E-mail</dt>
+                            <dd data-campo="email"></dd>
+                        </div>
+                        <div class="lista-dados__item">
+                            <dt>CPF</dt>
+                            <dd data-campo="cpf"></dd>
+                        </div>
+                        <div class="lista-dados__item">
+                            <dt>Data de nascimento</dt>
+                            <dd data-campo="dataNascimento"></dd>
+                        </div>
+                        <div class="lista-dados__item">
+                            <dt>Tipo de conta</dt>
+                            <dd data-campo="tipoPerfil"></dd>
+                        </div>
+                        <div class="lista-dados__item">
+                            <dt>Conta criada em</dt>
+                            <dd data-campo="dataCriacaoConta"></dd>
+                        </div>
+                    </dl>
+
+                    <div class="acoes-perfil">
+                        <button type="button" class="botao botao--contorno botao--bloco" data-acao="editar-perfil">
+                            ✏️ Editar perfil
+                        </button>
+
+                        <!-- Espaço reservado para futuras ações (ex: alterar senha, ver histórico, preferências) -->
+                        <!-- <button type="button" class="botao botao--contorno botao--bloco">🔒 Alterar senha</button> -->
+
+                        <button type="button" class="botao botao--perigo botao--bloco" data-acao="excluir-conta">
+                            🗑️ Excluir minha conta
+                        </button>
+
+                        <button type="button" class="botao botao--contorno botao--bloco" data-acao="sair">
+                            🚪 Sair
+                        </button>
+                    </div>
+
+                </div>
+
+                <!-- ============================================================
+             MODO EDIÇÃO
+             Escondido (hidden) até o usuário clicar em "Editar perfil".
+             O perfil.js preenche os campos com os dados atuais antes de
+             exibir este formulário, e o envia via PUT /api/usuarios/me.
+             ============================================================ -->
+                <form id="formulario-editar-perfil" novalidate hidden>
+                    <fieldset class="formulario">
+                        <legend class="somente-leitor">Editar dados do perfil</legend>
+
+                        <div class="campo">
+                            <label for="perfil-nome">Nome completo</label>
+                            <input type="text" id="perfil-nome" name="nome" autocomplete="name" required
+                                aria-describedby="perfil-nome-erro" />
+                            <p class="campo__erro" id="perfil-nome-erro" data-erro-para="perfil-nome"></p>
+                        </div>
+
+                        <div class="campo">
+                            <label for="perfil-email">E-mail</label>
+                            <input type="email" id="perfil-email" name="email" autocomplete="email" required
+                                aria-describedby="perfil-email-erro" />
+                            <p class="campo__erro" id="perfil-email-erro" data-erro-para="perfil-email"></p>
+                        </div>
+
+                        <button type="submit" class="botao botao--primario botao--bloco">
+                            Salvar alterações
+                        </button>
+                        <button type="button" class="botao botao--contorno botao--bloco" data-acao="cancelar-edicao">
+                            Cancelar
+                        </button>
+                    </fieldset>
+                </form>
+
+            </div>
+
+        </section>
+    </main>
+
+    <!-- utilitarios.js precisa vir ANTES de perfil.js: perfil.js usa funções
+       definidas nele (mostrarAlerta, definirErroCampo, validarEmail, etc.) -->
+    <script th:src="@{/js/utilitarios.js}"></script>
+    <script th:src="@{/js/perfil.js}"></script>
+</body>
+
+</html>

@@ -1,0 +1,126 @@
+/* ============================================================
+   PAINEL — estilos complementares ao estilo.css
+   Reaproveita as variáveis já definidas em estilo.css.
+   ============================================================ */
+
+.corpo-painel {
+  background: var(--cor-fundo);
+  min-height: 100vh;
+}
+
+/* ---------------------------------------------------------- */
+/* BARRA SUPERIOR                                              */
+/* ---------------------------------------------------------- */
+.barra-superior {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 28px;
+  background: var(--cor-superficie);
+  border-bottom: 1px solid var(--cor-borda);
+}
+
+.barra-superior__marca {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* ---------------------------------------------------------- */
+/* AVATAR + MENU SUSPENSO                                       */
+/* ---------------------------------------------------------- */
+.menu-usuario {
+  position: relative;
+}
+
+.avatar-circular {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--cor-primaria);
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  font-family: var(--fonte-titulo);
+  font-weight: 700;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background var(--transicao-base);
+}
+.avatar-circular:hover {
+  background: var(--cor-primaria-escura);
+}
+
+.menu-usuario__dropdown {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  min-width: 220px;
+  background: var(--cor-superficie);
+  border: 1px solid var(--cor-borda);
+  border-radius: var(--raio-medio);
+  box-shadow: var(--sombra-cartao);
+  overflow: hidden;
+  z-index: 10;
+}
+
+.menu-usuario__cabecalho {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--cor-borda);
+}
+.menu-usuario__cabecalho strong {
+  font-size: 14px;
+  color: var(--cor-texto);
+}
+.menu-usuario__cabecalho span {
+  font-size: 12px;
+  color: var(--cor-texto-suave);
+}
+
+.menu-usuario__item {
+  display: block;
+  width: 100%;
+  text-align: left;
+  padding: 10px 16px;
+  font-family: var(--fonte-corpo);
+  font-size: 14px;
+  color: var(--cor-texto);
+  text-decoration: none;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: background var(--transicao-base);
+}
+.menu-usuario__item:hover {
+  background: var(--cor-fundo);
+}
+.menu-usuario__item--perigo {
+  color: var(--cor-perigo);
+}
+
+/* ---------------------------------------------------------- */
+/* CONTEÚDO PRINCIPAL                                          */
+/* ---------------------------------------------------------- */
+.conteudo-painel {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 40px 28px;
+}
+
+.conteudo-painel__titulo {
+  font-family: var(--fonte-titulo);
+  font-size: 24px;
+  color: var(--cor-texto);
+  margin: 0 0 8px;
+}
+
+.conteudo-painel__descricao {
+  font-size: 14px;
+  color: var(--cor-texto-suave);
+  margin: 0;
+}

@@ -1,0 +1,61 @@
+/* ============================================================
+   PERFIL — estilos complementares ao estilo.css
+   Reaproveita as variáveis (--cor-primaria, --raio-*, etc.) já
+   definidas em estilo.css; esse arquivo só adiciona o que é
+   específico da tela de perfil.
+   ============================================================ */
+
+.cartao-perfil {
+  width: 100%;
+  max-width: 460px;
+  background: var(--cor-superficie);
+  border-radius: var(--raio-grande);
+  box-shadow: var(--sombra-cartao);
+  padding: 32px 28px;
+}
+
+.lista-dados {
+  margin: 0 0 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.lista-dados__item {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--cor-borda);
+}
+
+.lista-dados__item dt {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--cor-texto-suave);
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+.lista-dados__item dd {
+  margin: 0;
+  font-size: 15px;
+  color: var(--cor-texto);
+}
+
+.acoes-perfil {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* Variante de botão para ações destrutivas (excluir conta) */
+.botao--perigo {
+  background: transparent;
+  color: var(--cor-perigo);
+  border: 1.5px solid var(--cor-perigo-fundo);
+}
+.botao--perigo:hover {
+  background: var(--cor-perigo-fundo);
+  border-color: var(--cor-perigo);
+}

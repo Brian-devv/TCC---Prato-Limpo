@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Painel — Sistema</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap"
+        rel="stylesheet" />
+
+    <link rel="stylesheet" th:href="@{/css/estilo.css}" />
+    <link rel="stylesheet" th:href="@{/css/painel.css}" />
+</head>
+
+<body class="corpo-painel">
+
+    <header class="barra-superior">
+        <div class="barra-superior__marca">
+            <span class="marca-simbolo" aria-hidden="true">◆</span>
+            <span class="marca-nome">Sistema<span class="marca-nome--destaque"> Restaurante</span></span>
+        </div>
+
+        <!-- Avatar com as iniciais do usuário logado; preenchido pelo painel.js -->
+        <div class="menu-usuario">
+            <button type="button" class="avatar-circular" data-acao="abrir-menu-usuario" aria-haspopup="true"
+                aria-expanded="false">
+                <span data-elemento="iniciais">--</span>
+            </button>
+
+            <div class="menu-usuario__dropdown" data-elemento="dropdown-usuario" hidden>
+                <div class="menu-usuario__cabecalho">
+                    <strong data-elemento="nome-usuario">Carregando...</strong>
+                    <span data-elemento="email-usuario"></span>
+                </div>
+                <a th:href="@{/perfil}" class="menu-usuario__item">👤 Meu perfil</a>
+                <button type="button" class="menu-usuario__item menu-usuario__item--perigo" data-acao="sair">🚪
+                    Sair</button>
+            </div>
+        </div>
+    </header>
+
+    <main class="conteudo-painel">
+        <div class="alerta" role="status" aria-live="polite" data-elemento="alerta" hidden></div>
+
+        <h1 class="conteudo-painel__titulo">
+            Bem-vindo(a), <span data-elemento="nome-boas-vindas">...</span>!
+        </h1>
+        <p class="conteudo-painel__descricao">
+            Este é o seu painel. Em breve, novas funcionalidades vão aparecer por aqui.
+        </p>
+    </main>
+
+    <script th:src="@{/js/utilitarios.js}"></script>
+    <script th:src="@{/js/painel.js}"></script>
+</body>
+
+</html>

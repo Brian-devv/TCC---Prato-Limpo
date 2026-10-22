@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Entrar — Sistema</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap"
+        rel="stylesheet" />
+
+    <link rel="stylesheet" th:href="@{/css/estilo.css}" />
+</head>
+
+<body>
+
+    <main class="pagina-autenticacao">
+        <section class="cartao-autenticacao" aria-labelledby="titulo-pagina">
+
+            <header class="cartao-autenticacao__marca">
+                <span class="marca-simbolo" aria-hidden="true">◆</span>
+                <span class="marca-nome">Sistema<span class="marca-nome--destaque"> Restaurante</span></span>
+            </header>
+
+            <h1 id="titulo-pagina" class="cartao-autenticacao__titulo">Acesse sua conta</h1>
+
+            <nav class="abas" aria-label="Escolha entre entrar ou criar conta">
+                <a th:href="@{/entrar}" class="abas__link esta-ativo" aria-current="page">Entrar</a>
+                <a th:href="@{/cadastro}" class="abas__link">Cadastrar</a>
+            </nav>
+
+            <div class="alerta" role="status" aria-live="polite" data-elemento="alerta" hidden></div>
+
+            <form id="formulario-entrar" novalidate>
+                <fieldset class="formulario">
+                    <legend class="somente-leitor">Dados de acesso</legend>
+
+                    <div class="campo">
+                        <label for="entrar-email">E-mail</label>
+                        <input type="email" id="entrar-email" name="email" autocomplete="email" required
+                            aria-describedby="entrar-email-erro" />
+                        <p class="campo__erro" id="entrar-email-erro" data-erro-para="entrar-email"></p>
+                    </div>
+
+                    <div class="campo">
+                        <label for="entrar-senha">Senha</label>
+                        <div class="grupo-entrada">
+                            <input type="password" id="entrar-senha" name="senha" autocomplete="current-password"
+                                required aria-describedby="entrar-senha-erro" />
+                            <button type="button" class="grupo-entrada__alternar" data-alternar-senha="entrar-senha"
+                                aria-pressed="false" aria-label="Mostrar senha">
+                                👁
+                            </button>
+                        </div>
+                        <p class="campo__erro" id="entrar-senha-erro" data-erro-para="entrar-senha"></p>
+                    </div>
+
+                    <div class="formulario__linha">
+                        <label class="caixa-selecao">
+                            <input type="checkbox" name="lembrar" id="entrar-lembrar" />
+                            <span>Lembrar-me</span>
+                        </label>
+                        <a class="link" th:href="@{/redefinir-senha}">Esqueci minha senha</a>
+                    </div>
+
+                    <button type="submit" class="botao botao--primario botao--bloco">
+                        Entrar
+                    </button>
+                </fieldset>
+            </form>
+
+            <div class="divisor" role="separator" aria-orientation="horizontal"><span>ou</span></div>
+
+            <a th:href="@{/administrador}" class="botao botao--contorno botao--bloco">
+                Entrar como administrador
+            </a>
+
+        </section>
+    </main>
+
+    <script th:src="@{/js/utilitarios.js}"></script>
+    <script th:src="@{/js/entrar.js}"></script>
+</body>
+
+</html>

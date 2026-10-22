@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Acesso administrativo — Sistema</title>
+
+    <!-- Fontes do Google Fonts, usadas em todas as telas do sistema -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap"
+        rel="stylesheet" />
+
+    <link rel="stylesheet" th:href="@{/css/estilo.css}" />
+</head>
+
+<body>
+
+    <main class="pagina-autenticacao">
+        <section class="cartao-autenticacao" aria-labelledby="titulo-pagina">
+
+            <header class="cartao-autenticacao__marca">
+                <span class="marca-simbolo" aria-hidden="true">◆</span>
+                <span class="marca-nome">Sistema<span class="marca-nome--destaque"> Restaurante</span></span>
+            </header>
+
+            <!-- Link de volta para o login comum -->
+            <nav aria-label="Voltar">
+                <a th:href="@{/entrar}" class="botao-voltar">
+                    <span aria-hidden="true">←</span> Voltar para o login
+                </a>
+            </nav>
+
+            <h1 id="titulo-pagina" class="cartao-autenticacao__titulo">Acesso administrativo</h1>
+
+            <!-- Alerta genérico (sucesso/erro), controlado via JS (utilitarios.js) -->
+            <div class="alerta" role="status" aria-live="polite" data-elemento="alerta" hidden></div>
+
+            <p class="painel__descricao">
+                Esta área é exclusiva para administradores do sistema.
+            </p>
+
+            <!-- Este formulário é só de LOGIN — não existe autocadastro de
+           administrador pela interface pública, por segurança. O
+           primeiro administrador é criado automaticamente pelo
+           AdministradorSeeder (ver application.properties). -->
+            <form id="formulario-administrador" novalidate>
+                <fieldset class="formulario">
+                    <legend class="somente-leitor">Dados de acesso administrativo</legend>
+
+                    <div class="campo">
+                        <label for="administrador-email">E-mail</label>
+                        <input type="email" id="administrador-email" name="email" autocomplete="email" required
+                            aria-describedby="administrador-email-erro" />
+                        <p class="campo__erro" id="administrador-email-erro" data-erro-para="administrador-email"></p>
+                    </div>
+
+                    <div class="campo">
+                        <label for="administrador-senha">Senha</label>
+                        <div class="grupo-entrada">
+                            <input type="password" id="administrador-senha" name="senha" autocomplete="current-password"
+                                required aria-describedby="administrador-senha-erro" />
+                            <button type="button" class="grupo-entrada__alternar"
+                                data-alternar-senha="administrador-senha" aria-pressed="false"
+                                aria-label="Mostrar senha">
+                                👁
+                            </button>
+                        </div>
+                        <p class="campo__erro" id="administrador-senha-erro" data-erro-para="administrador-senha"></p>
+                    </div>
+
+                    <button type="submit" class="botao botao--primario botao--bloco">
+                        Entrar como administrador
+                    </button>
+                </fieldset>
+            </form>
+
+        </section>
+    </main>
+
+    <!-- utilitarios.js precisa vir ANTES de administrador.js -->
+    <script th:src="@{/js/utilitarios.js}"></script>
+    <script th:src="@{/js/administrador.js}"></script>
+</body>
+
+</html>

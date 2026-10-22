@@ -1,0 +1,152 @@
+/* ============================================================
+   ADMINISTRADOR — estilos complementares a estilo.css e painel.css
+   ============================================================ */
+
+/* ---------------------------------------------------------- */
+/* CARDS "EM BREVE" (placeholders de funcionalidades futuras)   */
+/* ---------------------------------------------------------- */
+.grade-placeholders {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 16px;
+  margin: 24px 0 32px;
+}
+
+.cartao-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  padding: 18px;
+  background: var(--cor-superficie);
+  border: 1.5px dashed var(--cor-borda);
+  border-radius: var(--raio-medio);
+}
+
+.cartao-placeholder__icone {
+  font-size: 22px;
+  margin-bottom: 4px;
+}
+
+.cartao-placeholder strong {
+  font-size: 14px;
+  color: var(--cor-texto);
+}
+
+.cartao-placeholder span:last-child {
+  font-size: 12px;
+  color: var(--cor-texto-suave);
+  font-family: var(--fonte-monoespacada);
+}
+
+/* ---------------------------------------------------------- */
+/* SEÇÃO DE USUÁRIOS                                            */
+/* ---------------------------------------------------------- */
+.secao-usuarios {
+  background: var(--cor-superficie);
+  border-radius: var(--raio-medio);
+  padding: 20px;
+  border: 1px solid var(--cor-borda);
+}
+
+/* Espaço entre a caixa de listagem e a caixa de cadastro de funcionário,
+   já que agora as duas ficam empilhadas na mesma página */
+.secao-cadastro-funcionario {
+  margin-top: 24px;
+}
+
+/* Cabeçalho da seção: título à esquerda, botão "+ Novo usuário" à direita */
+.secao-usuarios__cabecalho {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.secao-usuarios__cabecalho .botao {
+  width: auto;
+  padding: 8px 16px;
+  font-size: 13px;
+}
+
+.secao-usuarios__titulo {
+  font-family: var(--fonte-titulo);
+  font-size: 16px;
+  color: var(--cor-texto);
+  margin: 0;
+}
+
+/* ---------------------------------------------------------- */
+/* TABELA DE USUÁRIOS                                           */
+/* ---------------------------------------------------------- */
+.tabela-usuarios {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+.tabela-usuarios th {
+  text-align: left;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: var(--cor-texto-suave);
+  padding: 8px 10px;
+  border-bottom: 1px solid var(--cor-borda);
+}
+
+.tabela-usuarios td {
+  padding: 10px;
+  border-bottom: 1px solid var(--cor-borda);
+  color: var(--cor-texto);
+}
+
+.tabela-usuarios tbody tr:last-child td {
+  border-bottom: none;
+}
+
+/* Selo de status (ativo/inativo) dentro da tabela */
+.selo-status {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 600;
+}
+.selo-status--ativo {
+  background: var(--cor-sucesso-fundo);
+  color: var(--cor-sucesso);
+}
+.selo-status--inativo {
+  background: var(--cor-perigo-fundo);
+  color: var(--cor-perigo);
+}
+
+/* Botão de ação dentro de uma célula da tabela (ex: "Excluir") */
+.botao-tabela {
+  border: none;
+  background: transparent;
+  padding: 4px 8px;
+  font-family: var(--fonte-corpo);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  border-radius: 6px;
+  transition: background var(--transicao-base);
+}
+.botao-tabela--perigo {
+  color: var(--cor-perigo);
+}
+.botao-tabela--perigo:hover {
+  background: var(--cor-perigo-fundo);
+}
+.botao-tabela:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Texto exibido no lugar do botão de excluir, na própria linha do administrador logado */
+.texto-suave-tabela {
+  color: var(--cor-texto-suave);
+  font-size: 13px;
+}

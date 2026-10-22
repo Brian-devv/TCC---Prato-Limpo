@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Redefinir senha — Sistema</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap"
+        rel="stylesheet" />
+
+    <link rel="stylesheet" th:href="@{/css/estilo.css}" />
+</head>
+
+<body>
+
+    <main class="pagina-autenticacao">
+        <section class="cartao-autenticacao" aria-labelledby="titulo-pagina">
+
+            <header class="cartao-autenticacao__marca">
+                <span class="marca-simbolo" aria-hidden="true">◆</span>
+                <span class="marca-nome">Sistema<span class="marca-nome--destaque"> Restaurante</span></span>
+            </header>
+
+            <h1 id="titulo-pagina" class="cartao-autenticacao__titulo">Redefinir sua senha</h1>
+
+            <nav aria-label="Voltar">
+                <a th:href="@{/entrar}" class="botao-voltar">
+                    <span aria-hidden="true">←</span> Voltar para o login
+                </a>
+            </nav>
+
+            <div class="alerta" role="status" aria-live="polite" data-elemento="alerta" hidden></div>
+
+            <p class="painel__descricao">
+                Informe o e-mail cadastrado para receber o link de redefinição de senha.
+            </p>
+
+            <form id="formulario-redefinir" novalidate>
+                <fieldset class="formulario">
+                    <legend class="somente-leitor">E-mail para redefinição de senha</legend>
+
+                    <div class="campo">
+                        <label for="redefinir-email">E-mail</label>
+                        <input type="email" id="redefinir-email" name="email" autocomplete="email" required
+                            aria-describedby="redefinir-email-erro" />
+                        <p class="campo__erro" id="redefinir-email-erro" data-erro-para="redefinir-email"></p>
+                    </div>
+
+                    <button type="submit" class="botao botao--primario botao--bloco">
+                        Enviar link de redefinição
+                    </button>
+                </fieldset>
+            </form>
+
+        </section>
+    </main>
+
+    <script th:src="@{/js/utilitarios.js}"></script>
+    <script th:src="@{/js/redefinir-senha.js}"></script>
+</body>
+
+</html>

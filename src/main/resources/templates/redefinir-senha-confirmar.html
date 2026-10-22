@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Nova senha — Sistema</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap"
+        rel="stylesheet" />
+
+    <link rel="stylesheet" th:href="@{/css/estilo.css}" />
+</head>
+
+<body>
+
+    <main class="pagina-autenticacao">
+        <section class="cartao-autenticacao" aria-labelledby="titulo-pagina">
+
+            <header class="cartao-autenticacao__marca">
+                <span class="marca-simbolo" aria-hidden="true">◆</span>
+                <span class="marca-nome">Sistema<span class="marca-nome--destaque"> Restaurante</span></span>
+            </header>
+
+            <h1 id="titulo-pagina" class="cartao-autenticacao__titulo">Defina sua nova senha</h1>
+
+            <nav aria-label="Voltar">
+                <a th:href="@{/entrar}" class="botao-voltar">
+                    <span aria-hidden="true">←</span> Voltar para o login
+                </a>
+            </nav>
+
+            <div class="alerta" role="status" aria-live="polite" data-elemento="alerta" hidden></div>
+
+            <form id="formulario-nova-senha" novalidate>
+                <fieldset class="formulario">
+                    <legend class="somente-leitor">Nova senha</legend>
+
+                    <div class="campo">
+                        <label for="nova-senha">Nova senha</label>
+                        <div class="grupo-entrada">
+                            <input type="password" id="nova-senha" name="novaSenha" autocomplete="new-password" required
+                                aria-describedby="nova-senha-erro rotulo-forca" />
+                            <button type="button" class="grupo-entrada__alternar" data-alternar-senha="nova-senha"
+                                aria-pressed="false" aria-label="Mostrar senha">
+                                👁
+                            </button>
+                        </div>
+
+                        <div class="medidor-forca" data-elemento="medidor-forca">
+                            <div class="medidor-forca__barras">
+                                <span class="medidor-forca__barra" data-barra="0"></span>
+                                <span class="medidor-forca__barra" data-barra="1"></span>
+                                <span class="medidor-forca__barra" data-barra="2"></span>
+                                <span class="medidor-forca__barra" data-barra="3"></span>
+                            </div>
+                            <span class="medidor-forca__rotulo" id="rotulo-forca" data-rotulo-forca>
+                                Digite uma senha
+                            </span>
+                        </div>
+
+                        <p class="campo__erro" id="nova-senha-erro" data-erro-para="nova-senha"></p>
+                    </div>
+
+                    <div class="campo">
+                        <label for="confirmar-nova-senha">Confirmar nova senha</label>
+                        <input type="password" id="confirmar-nova-senha" name="confirmarNovaSenha"
+                            autocomplete="new-password" required aria-describedby="confirmar-nova-senha-erro" />
+                        <p class="campo__erro" id="confirmar-nova-senha-erro" data-erro-para="confirmar-nova-senha"></p>
+                    </div>
+
+                    <button type="submit" class="botao botao--primario botao--bloco">
+                        Salvar nova senha
+                    </button>
+                </fieldset>
+            </form>
+
+        </section>
+    </main>
+
+    <script th:src="@{/js/utilitarios.js}"></script>
+    <script th:src="@{/js/redefinir-senha-confirmar.js}"></script>
+</body>
+
+</html>

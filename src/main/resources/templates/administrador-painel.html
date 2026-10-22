@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Painel administrativo — Sistema</title>
+
+    <!-- Fontes do Google Fonts, usadas em todas as telas do sistema -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap"
+        rel="stylesheet" />
+
+    <!-- estilo.css: variáveis/base compartilhadas por todo o sistema -->
+    <!-- painel.css: barra superior e menu do avatar (reaproveitado do painel comum) -->
+    <!-- administrador.css: estilos específicos desta tela (tabela, placeholders, formulário de funcionário) -->
+    <link rel="stylesheet" th:href="@{/css/estilo.css}" />
+    <link rel="stylesheet" th:href="@{/css/painel.css}" />
+    <link rel="stylesheet" th:href="@{/css/administrador.css}" />
+</head>
+
+<body class="corpo-painel">
+
+    <!-- ============================================================
+       BARRA SUPERIOR
+       Mesma barra do painel comum: marca à esquerda, avatar com
+       iniciais à direita. O menu do avatar tem "Meu perfil"
+       (reaproveita a tela /perfil de qualquer usuário) e "Sair".
+       ============================================================ -->
+    <header class="barra-superior">
+        <div class="barra-superior__marca">
+            <span class="marca-simbolo" aria-hidden="true">◆</span>
+            <span class="marca-nome">Sistema<span class="marca-nome--destaque"> Restaurante</span></span>
+        </div>
+
+        <div class="menu-usuario">
+            <button type="button" class="avatar-circular" data-acao="abrir-menu-usuario" aria-haspopup="true"
+                aria-expanded="false">
+                <span data-elemento="iniciais">--</span>
+            </button>
+
+            <div class="menu-usuario__dropdown" data-elemento="dropdown-usuario" hidden>
+                <div class="menu-usuario__cabecalho">
+                    <strong data-elemento="nome-usuario">Carregando...</strong>
+                    <span data-elemento="email-usuario"></span>
+                </div>
+                <a th:href="@{/perfil}" class="menu-usuario__item">👤 Meu perfil</a>
+                <button type="button" class="menu-usuario__item menu-usuario__item--perigo" data-acao="sair">🚪
+                    Sair</button>
+            </div>
+        </div>
+    </header>
+
+    <main class="conteudo-painel">
+        <!-- Alerta genérico (sucesso/erro), controlado via JS (utilitarios.js).
+         Compartilhado pelas duas caixas abaixo — só existe um de cada vez. -->
+        <div class="alerta" role="status" aria-live="polite" data-elemento="alerta" hidden></div>
+
+        <h1 class="conteudo-painel__titulo">Painel administrativo</h1>
+        <p class="conteudo-painel__descricao">
+            Gestão de usuários e, em breve, cardápio e relatórios de desperdício.
+        </p>
+
+        <!-- ============================================================
+         PLACEHOLDERS de funcionalidades futuras (esqueleto).
+         Ainda sem lógica real — só para deixar o layout já organizado
+         para quando essas funcionalidades forem implementadas.
+         ============================================================ -->
+        <div class="grade-placeholders">
+            <div class="cartao-placeholder">
+                <span class="cartao-placeholder__icone">🍽️</span>
+                <strong>Cardápio semanal</strong>
+                <span>Em breve</span>
+            </div>
+            <div class="cartao-placeholder">
+                <span class="cartao-placeholder__icone">📊</span>
+                <strong>Desperdício (%)</strong>
+                <span>Em breve</span>
+            </div>
+        </div>
+
+        <!-- ============================================================
+         CAIXA 1 — USUÁRIOS CADASTRADOS (listagem)
+         Preenchida pelo administrador-painel.js via GET /api/admin/usuarios.
+         Mostra só nome, e-mail, tipo e status — nunca CPF, senha ou
+         data de nascimento (recorte de dados que o administrador tem
+         permissão de ver). O botão "Excluir" fica SÓ aqui — a caixa
+         de baixo é exclusivamente para cadastrar, não para excluir.
+         ============================================================ -->
+        <section class="secao-usuarios">
+            <h2 class="secao-usuarios__titulo">Usuários cadastrados</h2>
+
+            <p data-elemento="carregando-usuarios" class="painel__descricao">Carregando usuários...</p>
+
+            <table class="tabela-usuarios" data-elemento="tabela-usuarios" hidden>
+                <thead>
+                    <tr>
+                        <th>Nome</th>
+                        <th>E-mail</th>
+                        <th>Tipo</th>
+                        <th>Status</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody data-elemento="corpo-tabela-usuarios">
+                    <!-- Linhas inseridas dinamicamente pelo administrador-painel.js -->
+                </tbody>
+            </table>
+        </section>
+
+        <!-- ============================================================
+         CAIXA 2 — CADASTRAR FUNCIONÁRIO (formulário)
+         Fica sempre visível nesta mesma página — sem redirecionar
+         para outra tela. Ao enviar com sucesso, o
+         administrador-painel.js recarrega a CAIXA 1 automaticamente,
+         para o funcionário recém-criado já aparecer na listagem.
+         ============================================================ -->
+        <section class="secao-usuarios secao-cadastro-funcionario">
+            <h2 class="secao-usuarios__titulo">Cadastrar funcionário</h2>
+
+            <form id="formulario-cadastrar-funcionario" novalidate>
+                <fieldset class="formulario">
+                    <legend class="somente-leitor">Dados do novo funcionário</legend>
+
+                    <div class="campo">
+                        <label for="funcionario-nome">Nome completo</label>
+                        <input type="text" id="funcionario-nome" name="nome" autocomplete="name" required
+                            aria-describedby="funcionario-nome-erro" />
+                        <p class="campo__erro" id="funcionario-nome-erro" data-erro-para="funcionario-nome"></p>
+                    </div>
+
+                    <div class="campo">
+                        <label for="funcionario-email">E-mail</label>
+                        <input type="email" id="funcionario-email" name="email" autocomplete="email" required
+                            aria-describedby="funcionario-email-erro" />
+                        <p class="campo__erro" id="funcionario-email-erro" data-erro-para="funcionario-email"></p>
+                    </div>
+
+                    <!-- CPF + Data de nascimento lado a lado, mesmo padrão visual do resto do sistema -->
+                    <div class="campo-duplo">
+                        <div class="campo">
+                            <label for="funcionario-cpf">CPF</label>
+                            <input type="text" id="funcionario-cpf" name="cpf" inputmode="numeric"
+                                placeholder="000.000.000-00" maxlength="14" required
+                                aria-describedby="funcionario-cpf-erro" />
+                            <p class="campo__erro" id="funcionario-cpf-erro" data-erro-para="funcionario-cpf"></p>
+                        </div>
+
+                        <div class="campo">
+                            <label for="funcionario-data-nascimento">Data de nascimento</label>
+                            <input type="date" id="funcionario-data-nascimento" name="dataNascimento" required
+                                aria-describedby="funcionario-data-nascimento-erro" />
+                            <p class="campo__erro" id="funcionario-data-nascimento-erro"
+                                data-erro-para="funcionario-data-nascimento"></p>
+                        </div>
+                    </div>
+
+                    <!-- Cargo + Setor lado a lado -->
+                    <div class="campo-duplo">
+                        <div class="campo">
+                            <label for="funcionario-cargo">Cargo</label>
+                            <input type="text" id="funcionario-cargo" name="cargo" required
+                                aria-describedby="funcionario-cargo-erro" />
+                            <p class="campo__erro" id="funcionario-cargo-erro" data-erro-para="funcionario-cargo"></p>
+                        </div>
+
+                        <div class="campo">
+                            <label for="funcionario-setor">Setor</label>
+                            <input type="text" id="funcionario-setor" name="setor" required
+                                aria-describedby="funcionario-setor-erro" />
+                            <p class="campo__erro" id="funcionario-setor-erro" data-erro-para="funcionario-setor"></p>
+                        </div>
+                    </div>
+
+                    <div class="campo">
+                        <label for="funcionario-registro-profissional">Registro profissional</label>
+                        <input type="text" id="funcionario-registro-profissional" name="registroProfissional" required
+                            aria-describedby="funcionario-registro-profissional-erro" />
+                        <p class="campo__erro" id="funcionario-registro-profissional-erro"
+                            data-erro-para="funcionario-registro-profissional"></p>
+                    </div>
+
+                    <div class="campo">
+                        <label for="funcionario-senha">Senha provisória</label>
+                        <div class="grupo-entrada">
+                            <input type="password" id="funcionario-senha" name="senha" autocomplete="new-password"
+                                required aria-describedby="funcionario-senha-erro rotulo-forca-funcionario" />
+                            <button type="button" class="grupo-entrada__alternar"
+                                data-alternar-senha="funcionario-senha" aria-pressed="false"
+                                aria-label="Mostrar senha">👁</button>
+                        </div>
+
+                        <div class="medidor-forca" data-elemento="medidor-forca">
+                            <div class="medidor-forca__barras">
+                                <span class="medidor-forca__barra" data-barra="0"></span>
+                                <span class="medidor-forca__barra" data-barra="1"></span>
+                                <span class="medidor-forca__barra" data-barra="2"></span>
+                                <span class="medidor-forca__barra" data-barra="3"></span>
+                            </div>
+                            <span class="medidor-forca__rotulo" id="rotulo-forca-funcionario" data-rotulo-forca>
+                                Digite uma senha
+                            </span>
+                        </div>
+
+                        <p class="campo__erro" id="funcionario-senha-erro" data-erro-para="funcionario-senha"></p>
+                    </div>
+
+                    <div class="campo">
+                        <label for="funcionario-confirmar-senha">Confirmar senha</label>
+                        <input type="password" id="funcionario-confirmar-senha" name="confirmarSenha"
+                            autocomplete="new-password" required aria-describedby="funcionario-confirmar-senha-erro" />
+                        <p class="campo__erro" id="funcionario-confirmar-senha-erro"
+                            data-erro-para="funcionario-confirmar-senha"></p>
+                    </div>
+
+                    <button type="submit" class="botao botao--acento botao--bloco">
+                        Cadastrar funcionário
+                    </button>
+                </fieldset>
+            </form>
+        </section>
+    </main>
+
+    <!-- utilitarios.js precisa vir ANTES de administrador-painel.js -->
+    <script th:src="@{/js/utilitarios.js}"></script>
+    <script th:src="@{/js/administrador-painel.js}"></script>
+</body>
+
+</html>
