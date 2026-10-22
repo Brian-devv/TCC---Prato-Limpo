@@ -109,4 +109,4 @@ Este projeto está em evolução. Futuramente serão adicionadas novas funcional
 
 ## Autor
 
-Davi Tales e Brian Ramos
+Davi, Brian, Isaac e Claude(IA de apoio)
